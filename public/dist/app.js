@@ -2,6 +2,9 @@
 (function (angular) {
     'use strict';
     console.log('angular app started');
+    //add analyticsApp.controllers
+    // analyticsApp.direcitves
+    // analyticsApp.services modules as dependencies
     angular.module('analyticsApp', ['ngRoute'])
         .config(config);
     function config($routeProvider, $locationProvider) {
@@ -17,14 +20,75 @@
         });
     }
 })(angular);
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+var AnalyticsServices;
+(function (AnalyticsServices) {
+    var UsersService = (function () {
+        function UsersService($q, $http) {
+            this.$q = $q;
+            this.$http = $http;
+            console.log('users service is defined');
+        }
+        UsersService.prototype.GetUsers = function () {
+            var q = this.$q.defer();
+            //todo: mock data for other charts	
+            var usersData = [
+                {
+                    name: 'Mark',
+                    age: 33,
+                    profession: 'web dev'
+                },
+                {
+                    name: 'Dave',
+                    age: 27,
+                    profession: 'ui des'
+                },
+                {
+                    name: 'Tom',
+                    age: 29,
+                    profession: 'ps guru'
+                },
+                {
+                    name: 'Rado',
+                    age: 35,
+                    profession: 'CTO'
+                }
+            ];
+            q.resolve(usersData);
+            return q.promise;
+        };
+        UsersService.$inject = ['$q', '$http'];
+        return UsersService;
+    })();
+    AnalyticsServices.UsersService = UsersService;
+    angular.module('analyticsApp').service('usersService', UsersService);
+})(AnalyticsServices || (AnalyticsServices = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
-(function (angular) {
-    'use strict';
-    angular.module('analyticsApp').controller('OverviewController', OverViewController);
-    function OverViewController() {
-        this.test = 'can you see me? Really?!!';
-    }
-})(angular);
+/// <reference path="../../services/usersService.ts" />
+var AnalyticsControllers;
+(function (AnalyticsControllers) {
+    var OverviewController = (function () {
+        function OverviewController(usersService) {
+            this.usersService = usersService;
+            console.log('overview controller init in ts sd', this.usersService);
+            this.GetUsers();
+        }
+        OverviewController.prototype.GetUsers = function () {
+            var _this = this;
+            this.usersService.GetUsers()
+                .then(function (usersData) {
+                console.log('success fetching users');
+                _this.users = usersData;
+            }, function (error) {
+                console.log('there was an error fetching users');
+            });
+        };
+        OverviewController.$inject = ['usersService'];
+        return OverviewController;
+    })();
+    AnalyticsControllers.OverviewController = OverviewController;
+    angular.module('analyticsApp').controller('OverviewController', OverviewController);
+})(AnalyticsControllers || (AnalyticsControllers = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 'use strict';
 var AnalyticsDirectives;
@@ -83,6 +147,8 @@ var AnalyticsDirectives;
     var PieChart = (function () {
         function PieChart() {
             this.restrict = 'E';
+            this.replace = true;
+            //transclude: boolean = true;
             this.templateUrl = '../app/directives/pieChart/pieChart.html';
             //constructor(){}
             this.link = function ($scope, el, attrs) {

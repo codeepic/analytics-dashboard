@@ -1,12 +1,16 @@
-<p>See me: {{vm.test}}</p>
+<h2>Analytics Overview</h2>
 
-<p>======================</p>
+<ul>
+	<li ng-repeat="user in vm.users">
+		{{user.name}} is {{user.age}} old and works as a {{user.profession}}
+	</li>
+</ul>
 
 <line-chart></line-chart>
 
 <div>
-	<pie-chart></pie-chart>
-	<pie-chart></pie-chart>
+	<pie-chart class="left"></pie-chart>
+	<pie-chart class="right"></pie-chart>
 	<span class="clear"></span>
 </div>	
 

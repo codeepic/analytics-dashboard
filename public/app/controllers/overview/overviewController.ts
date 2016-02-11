@@ -1,11 +1,28 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../services/usersService.ts" />
 
-(function(angular){
-	'use strict';
-	
-	angular.module('analyticsApp').controller('OverviewController', OverViewController);
+module AnalyticsControllers {
+	export class OverviewController {
 
-	function OverViewController() {
-		this.test = 'can you see me? Really?!!';
+		static $inject = ['usersService'];
+
+		private users: any;
+
+		constructor(private usersService: AnalyticsServices.UsersService) {
+			console.log('overview controller init in ts sd', this.usersService);
+			this.GetUsers();
+		}
+
+		public GetUsers() {
+			this.usersService.GetUsers()
+				.then((usersData) =>{
+					console.log('success fetching users');
+					this.users = usersData;
+				}, (error) => {
+					console.log('there was an error fetching users');
+				})
+		}
 	}
-})(angular)
+
+	angular.module('analyticsApp').controller('OverviewController', OverviewController);
+}

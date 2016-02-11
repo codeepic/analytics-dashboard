@@ -1,7 +1,18 @@
+@import '../mixins';
+
 .template-container{
     float: right;
     width: 82%;
     padding: 20px;
 }
 
-//
+//should be in separate files, kept here for now for convenience
+.line-chart,
+.pie-chart,
+.multi-line-chart{
+	border: 1px solid $veryLightGrey;
+	min-height: 250px;
+	margin-top: 20px;
+}
+
+.pie-chart { width: 48%; }

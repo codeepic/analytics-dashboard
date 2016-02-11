@@ -21,6 +21,11 @@ var sassFilesToCompress = [
 var jsFiles = [
     './public/app/**/**/*.ts',
     './public/app/*.ts'
+
+	  // './public/app/*.ts',
+   //  './public/app/services/**/*.ts',
+   //  './public/app/controllers/**/*.ts',
+   //  './public/app/directives/**/*.ts'
 ];
 
 //watch subtasks

@@ -4,6 +4,8 @@
 module AnalyticsDirectives{
 	export class PieChart implements angular.IDirective {
 		restrict: string = 'E';
+		replace: boolean = true;
+		//transclude: boolean = true;
 		templateUrl: string = '../app/directives/pieChart/pieChart.html';
 
 		//constructor(){}
