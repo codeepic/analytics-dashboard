@@ -7,20 +7,20 @@ var gulp = require('gulp'),
     watch = require('gulp-watch');
 
 var watchFiles = [
-    './app/*.ts',
-    './app/**/*.ts',
-    './style/css/*.scss',
-    './style/css/**/*.scss'
+    './public/app/*.ts',
+    './public/app/**/*.ts',
+    './public/style/css/*.scss',
+    './public/style/css/**/*.scss'
 ];
 
 var sassFilesToCompress = [
-    './style/css/*.scss',
-    './style/css/**/*.scss'
+    './public/style/css/*.scss',
+    './public/style/css/**/*.scss'
 ];
 
 var jsFiles = [
-    './app/*.ts',
-    './app/**/*.ts',
+    './public/app/**/**/*.ts',
+    './public/app/*.ts'
 ];
 
 //watch subtasks
@@ -29,7 +29,7 @@ gulp.task('css', function () {
     .pipe(sass().on('error', sass.logError))
     .pipe(minifyCSS())
     .pipe(concat('style.css'))
-    .pipe(gulp.dest('./dist'));
+    .pipe(gulp.dest('./public/dist'));
 });
 
 gulp.task('ts', function(){
@@ -39,7 +39,7 @@ gulp.task('ts', function(){
   	out: 'app.js'
   }))
   //.pipe(uglify())
-  .pipe(gulp.dest('./dist'));
+  .pipe(gulp.dest('./public/dist'));
 });
 
 gulp.task('watch', function () {
