@@ -1,0 +1,15 @@
+@import '../mixins';
+
+.main-nav{
+  width: 18%;
+  float: left;
+  background-color: $aluminium;
+
+  ul li a {
+    display: block;
+    padding: 20px;
+    background-color: $aluminium;
+
+    &:hover, &:active, &.active { background-color: $stormGrey; }
+  }
+}

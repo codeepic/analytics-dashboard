@@ -10,12 +10,12 @@ var watchFiles = [
     './public/app/*.ts',
     './public/app/**/*.ts',
     './public/style/css/*.scss',
-    './public/style/css/**/*.scss'
+    './public/style/css/modules/*.scss'
 ];
 
 var sassFilesToCompress = [
     './public/style/css/*.scss',
-    './public/style/css/**/*.scss'
+    './public/style/css/modules/*.scss'
 ];
 
 var jsFiles = [
