@@ -24,23 +24,27 @@ module AnalyticsDirectives{
                 convertDates();
                 drawChart();
             }
-            //uncomment to make responsive
-            // //resize the chart on browser resize
-            // $scope.$watch(() => {
-            //     elWidth = el.context.clientWidth;
-            //     elHeight = el.context.clientHeight;
-            //     return elWidth * elHeight; 
-            // }, () => {
-            //     removeChart();
-            //     drawChart(elWidth);
-            // });
+            
+            //resize the chart on browser resize
+            $scope.$watch(() => {
+                elWidth = el.context.clientWidth;
+                elHeight = el.context.clientHeight;
+                return elWidth * elHeight; 
+            }, () => {
+                removeChart();
+                drawChart(elWidth);
+            });
 
-            // function removeChart(){
-            //     d3.select('.multi-line-chart svg').remove();
-            // }
+            function removeChart(){
+                d3.select('.multi-line-chart svg').remove();
+            }
             
             function convertDates(){
                 parseDate = d3.time.format("%Y%m%d").parse;
+                
+                data.forEach(function(d) {
+                    d.date = parseDate(d.date);
+                });
             }
             
             function drawChart(w: number = 960){       //based on http://bl.ocks.org/mbostock/3884955
@@ -49,7 +53,6 @@ module AnalyticsDirectives{
                     width = w - margin.left - margin.right,
                     height = w/2 - margin.top - margin.bottom;
 
-                //var parseDate = d3.time.format("%Y%m%d").parse,
                 var x = d3.time.scale().range([0, width]),
                     y = d3.scale.linear().range([height, 0]),
                     color = d3.scale.category10(),
@@ -68,11 +71,7 @@ module AnalyticsDirectives{
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
                 color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
-
-                data.forEach(function(d) {
-                    d.date = parseDate(d.date);
-                });
-                console.log('data after parsing date: ', data);
+                
                 var apps: Array<IApp> = color.domain().map(function(name) {
                     return {
                         name: name,
@@ -108,8 +107,6 @@ module AnalyticsDirectives{
                     .data(apps)
                     .enter().append("g")
                     .attr("class", "city");
-
-                    console.log('line and data ', line);
 
                 city.append("path")
                     .attr("class", "line")

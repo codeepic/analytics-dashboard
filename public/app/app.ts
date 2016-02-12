@@ -3,8 +3,6 @@
 (function(angular) {
 	'use strict';
 
-	console.log('angular app started');
-
 //add analyticsApp.controllers
 // analyticsApp.direcitves
 // analyticsApp.services modules as dependencies

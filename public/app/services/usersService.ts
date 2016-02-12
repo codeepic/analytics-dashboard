@@ -4,9 +4,7 @@ module AnalyticsServices {
 	export class UsersService {
 		static $inject = ['$q', '$http'];
 
-		constructor(private $q: angular.IQService, private $http: angular.IHttpService){
-				console.log('users service is defined');
-		}
+		constructor(private $q: angular.IQService, private $http: angular.IHttpService){}
 		
 		public GetMockUsers(): angular.IPromise<{}> {
 			var q = this.$q.defer();
