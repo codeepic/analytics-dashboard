@@ -16,9 +16,9 @@ module AnalyticsControllers {
 			this.GetUsersData();
             
             //needed to make the chart directives responsive
-            // angular.element($window).on('resize', () => {
-            //     $scope.$apply();
-            // });
+            angular.element($window).on('resize', () => {
+                $scope.$apply();
+            });
 		}
 
 		public GetUsersData() {

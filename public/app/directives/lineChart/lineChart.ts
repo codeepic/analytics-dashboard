@@ -13,7 +13,7 @@ module AnalyticsDirectives{
 			data: '='
 		}
 
-		//constructor(){}
+		constructor(private $timeout: angular.ITimeoutService){}
 		
 		// you can set $scope to implement certain interface that extends angular.IScope, 
 		// but then you will tie the directive to one data set and it will not be
@@ -21,28 +21,44 @@ module AnalyticsDirectives{
         // el: angular.IAugmentedJQuery
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
 			
-            var elWidth, elHeight;
+            var data = $scope.data,
+                elWidth, elHeight,
+                that = this;            //todo: how I love these tricks? any way not to use it?
             
-            // $scope.$watch(function(){
-            //     // width = el.clientWidth;
-            //     // height = el.clientHeight;
-            //     elWidth = el.context.clientWidth;
-            //     elHeight = el.context.clientHeight;
-            //     //console.log('watcher dir: w: ', elWidth, ' h: ', elHeight);
-            //     return elWidth * elHeight; 
-            // }, resize);
-
-            // function resize(){
-            //     //console.log('res dir');
-            //     elWidth = el.context.clientWidth;
-            //     elHeight = el.context.clientHeight;
-            //     //drawChart(elWidth, elHeight);
-            //     drawChart();
-            // }
-            
+            convertDates();
             drawChart();
+            
+            //resize the chart on browser resize
+            $scope.$watch(function(){
+                elWidth = el.context.clientWidth;
+                elHeight = el.context.clientHeight;
+                return elWidth * elHeight; 
+            }, resizeChart);
+
+            function resizeChart(){
+                //elWidth = el.context.clientWidth;
+                //elHeight = el.context.clientHeight;
+                
+                that.$timeout(() => {   //debounce, so it's not called mid window resize
+                    removeChart();
+                    drawChart();
+                }, 4000);
+            }
+
+            function convertDates(){
+                data = data.map((d) => {
+                    var formatDate = d3.time.format("%d-%b-%Y");
+                    d.date = formatDate.parse(d.date);
+                    return d; 
+                });
+            }
 		    
+            function removeChart(){
+                d3.select('.line-chart svg').remove();
+            }
+            
             function drawChart(){
+                console.log('drawing');
                 //var margin = { top: 20, right: 20, bottom: 30, left: 50 },
                 // var margin = { top: 50, right: 100, bottom: 50, left: 100 },
 				// 	width = 960 - margin.left - margin.right,
@@ -52,12 +68,6 @@ module AnalyticsDirectives{
                     width = 960 - margin.left - margin.right,
                     height = 500 - margin.top - margin.bottom;
 
-                var data = $scope.data.map((d) => {
-                    var formatDate = d3.time.format("%d-%b-%Y");
-                    d.date = formatDate.parse(d.date);
-                    return d; 
-                });
-            
                 var x = d3.time.scale().range([0, width]),
                     y = d3.scale.linear().range([height, 0]),
                     xAxis = d3.svg.axis().scale(x).orient("bottom"),
@@ -99,11 +109,11 @@ module AnalyticsDirectives{
 		};
 
 		static factory(): angular.IDirectiveFactory {
-			var directive: angular.IDirectiveFactory = () => {
-					return new LineChart();
+			var directive: angular.IDirectiveFactory = ($timeout: angular.ITimeoutService) => {
+					return new LineChart($timeout);
 			}
 
-			directive.$inject = [];
+			directive.$inject = ['$timeout'];
 			return directive;
 		}
 	}
