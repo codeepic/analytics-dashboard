@@ -6,18 +6,16 @@ module AnalyticsControllers {
 
 		static $inject = ['usersService'];
 
-		private users: any;
+		private usersData: Array<IUserData>;
 
 		constructor(private usersService: AnalyticsServices.UsersService) {
-			console.log('overview controller init in ts sd', this.usersService);
-			this.GetUsers();
+			this.GetUsersData();
 		}
 
-		public GetUsers() {
+		public GetUsersData() {
 			this.usersService.GetUsers()
-				.then((usersData) =>{
-					console.log('success fetching users');
-					this.users = usersData;
+				.then((usersData: Array<IUserData>) =>{
+					this.usersData = usersData;
 				}, (error) => {
 					console.log('there was an error fetching users');
 				})

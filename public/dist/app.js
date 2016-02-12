@@ -29,7 +29,7 @@ var AnalyticsServices;
             this.$http = $http;
             console.log('users service is defined');
         }
-        UsersService.prototype.GetUsers = function () {
+        UsersService.prototype.GetMockUsers = function () {
             var q = this.$q.defer();
             //todo: mock data for other charts	
             var usersData = [
@@ -57,6 +57,65 @@ var AnalyticsServices;
             q.resolve(usersData);
             return q.promise;
         };
+        UsersService.prototype.GetUsers = function () {
+            var q = this.$q.defer();
+            var usersData = [
+                {
+                    date: '10/01/2016',
+                    users: 0
+                },
+                {
+                    date: '11/01/2016',
+                    users: 7345
+                },
+                {
+                    date: '12/01/2016',
+                    users: 11837
+                },
+                {
+                    date: '13/01/2016',
+                    users: 13892
+                },
+                {
+                    date: '14/01/2016',
+                    users: 16373
+                },
+                {
+                    date: '15/01/2016',
+                    users: 24093
+                },
+                {
+                    date: '16/01/2016',
+                    users: 27932
+                },
+                {
+                    date: '17/01/2016',
+                    users: 35838
+                },
+                {
+                    date: '18/01/2016',
+                    users: 36728
+                },
+                {
+                    date: '19/01/2016',
+                    users: 42748
+                },
+                {
+                    date: '20/01/2016',
+                    users: 46728
+                },
+                {
+                    date: '21/01/2016',
+                    users: 47282
+                },
+                {
+                    date: '22/01/2016',
+                    users: 48372
+                }
+            ];
+            q.resolve(usersData);
+            return q.promise;
+        };
         UsersService.$inject = ['$q', '$http'];
         return UsersService;
     })();
@@ -70,15 +129,13 @@ var AnalyticsControllers;
     var OverviewController = (function () {
         function OverviewController(usersService) {
             this.usersService = usersService;
-            console.log('overview controller init in ts sd', this.usersService);
-            this.GetUsers();
+            this.GetUsersData();
         }
-        OverviewController.prototype.GetUsers = function () {
+        OverviewController.prototype.GetUsersData = function () {
             var _this = this;
             this.usersService.GetUsers()
                 .then(function (usersData) {
-                console.log('success fetching users');
-                _this.users = usersData;
+                _this.usersData = usersData;
             }, function (error) {
                 console.log('there was an error fetching users');
             });
@@ -97,9 +154,16 @@ var AnalyticsDirectives;
         function LineChart() {
             this.restrict = 'E';
             this.templateUrl = '../app/directives/lineChart/lineChart.html';
+            this.scope = {
+                data: '='
+            };
             //constructor(){}
+            // you can set $scope to implement certain interface that extends angular.IScope, 
+            // but then you will tie the directive to one data set and it will not be
+            // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
-                console.log('line chart directive is loaded');
+                console.log('line chart directive is loaded, its data: ', $scope.data);
+                //set D3 chart here
             };
         }
         LineChart.factory = function () {
