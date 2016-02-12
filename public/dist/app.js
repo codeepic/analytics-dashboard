@@ -309,7 +309,6 @@ var AnalyticsDirectives;
                         return d;
                     });
                 }
-                //based on http://bl.ocks.org/mbostock/3883245
                 function drawChart(w) {
                     if (w === void 0) { w = 960; }
                     var margin = { top: 50, right: 50, bottom: 50, left: 100 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
@@ -356,6 +355,33 @@ var AnalyticsDirectives;
     angular.module('analyticsApp').directive('lineChart', LineChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
+'use strict';
+var AnalyticsDirectives;
+(function (AnalyticsDirectives) {
+    var PieChart = (function () {
+        function PieChart() {
+            this.restrict = 'E';
+            this.replace = true;
+            //transclude: boolean = true;
+            this.templateUrl = '../app/directives/pieChart/pieChart.html';
+            //constructor(){}
+            this.link = function ($scope, el, attrs) {
+                console.log('pie chart directive is loaded');
+            };
+        }
+        PieChart.factory = function () {
+            var directive = function () {
+                return new PieChart();
+            };
+            directive.$inject = [];
+            return directive;
+        };
+        return PieChart;
+    })();
+    AnalyticsDirectives.PieChart = PieChart;
+    angular.module('analyticsApp').directive('pieChart', PieChart.factory());
+})(AnalyticsDirectives || (AnalyticsDirectives = {}));
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 'use strict';
 var AnalyticsDirectives;
@@ -373,70 +399,88 @@ var AnalyticsDirectives;
             // but then you will tie the directive to one data set and it will not be
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
-                var elWidth, elHeight, data = $scope.data;
-                //d3 chart starts
-                //based on http://bl.ocks.org/mbostock/3884955
-                var margin = { top: 20, right: 80, bottom: 30, left: 50 }, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
-                var parseDate = d3.time.format("%Y%m%d").parse, x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), color = d3.scale.category10(), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
-                var line = d3.svg.line()
-                    .interpolate("basis")
-                    .x(function (d) { return x(d.date); })
-                    .y(function (d) { return y(d.codes); });
-                var svg = d3.select(".multi-line-chart").append("svg")
-                    .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom)
-                    .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                color.domain(d3.keys(data[0]).filter(function (key) { return key !== "date"; }));
-                data.forEach(function (d) {
-                    d.date = parseDate(d.date);
-                });
-                console.log('data after parsing date: ', data);
-                // var cities = color.domain().map(function(name) {
-                var apps = color.domain().map(function (name) {
-                    //var apps = color.domain().map(function(name) {
-                    return {
-                        name: name,
-                        values: data.map(function (d) {
-                            //return {date: d.date, temperature: +d[name]};
-                            return { date: d.date, codes: +d[name] };
-                        })
-                    };
-                });
-                x.domain(d3.extent(data, function (d) { return d.date; }));
-                y.domain([
-                    d3.min(apps, function (c) { return d3.min(c.values, function (v) { return v.codes; }); }),
-                    d3.max(apps, function (c) { return d3.max(c.values, function (v) { return v.codes; }); })
-                ]);
-                svg.append("g")
-                    .attr("class", "x axis")
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(xAxis);
-                svg.append("g")
-                    .attr("class", "y axis")
-                    .call(yAxis)
-                    .append("text")
-                    .attr("transform", "rotate(-90)")
-                    .attr("y", 6)
-                    .attr("dy", ".71em")
-                    .style("text-anchor", "end")
-                    .text("Codes"); //Temperature (ºF)
-                var city = svg.selectAll(".city")
-                    .data(apps)
-                    .enter().append("g")
-                    .attr("class", "city");
-                console.log('line and data ', line);
-                city.append("path")
-                    .attr("class", "line")
-                    .attr("d", function (d) { return line(d.values); }) //check line fn in line 36
-                    .style("stroke", function (d) { return color(d.name); });
-                city.append("text")
-                    .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; })
-                    .attr("transform", function (d) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
-                    .attr("x", 3)
-                    .attr("dy", ".35em")
-                    .text(function (d) { return d.name; });
-                //d3 chart ends
+                var parseDate, elWidth, elHeight, data = $scope.data;
+                if ($scope.data) {
+                    convertDates();
+                    drawChart();
+                }
+                //uncomment to make responsive
+                // //resize the chart on browser resize
+                // $scope.$watch(() => {
+                //     elWidth = el.context.clientWidth;
+                //     elHeight = el.context.clientHeight;
+                //     return elWidth * elHeight; 
+                // }, () => {
+                //     removeChart();
+                //     drawChart(elWidth);
+                // });
+                // function removeChart(){
+                //     d3.select('.multi-line-chart svg').remove();
+                // }
+                function convertDates() {
+                    parseDate = d3.time.format("%Y%m%d").parse;
+                }
+                function drawChart(w) {
+                    if (w === void 0) { w = 960; }
+                    var margin = { top: 20, right: 80, bottom: 30, left: 50 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
+                    //var parseDate = d3.time.format("%Y%m%d").parse,
+                    var x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), color = d3.scale.category10(), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
+                    var line = d3.svg.line()
+                        .interpolate("basis")
+                        .x(function (d) { return x(d.date); })
+                        .y(function (d) { return y(d.codes); });
+                    var svg = d3.select(".multi-line-chart").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    color.domain(d3.keys(data[0]).filter(function (key) { return key !== "date"; }));
+                    data.forEach(function (d) {
+                        d.date = parseDate(d.date);
+                    });
+                    console.log('data after parsing date: ', data);
+                    var apps = color.domain().map(function (name) {
+                        return {
+                            name: name,
+                            values: data.map(function (d) {
+                                return { date: d.date, codes: +d[name] };
+                            })
+                        };
+                    });
+                    x.domain(d3.extent(data, function (d) { return d.date; }));
+                    y.domain([
+                        d3.min(apps, function (c) { return d3.min(c.values, function (v) { return v.codes; }); }),
+                        d3.max(apps, function (c) { return d3.max(c.values, function (v) { return v.codes; }); })
+                    ]);
+                    svg.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(xAxis);
+                    svg.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis)
+                        .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", ".71em")
+                        .style("text-anchor", "end")
+                        .text("Codes");
+                    var city = svg.selectAll(".city")
+                        .data(apps)
+                        .enter().append("g")
+                        .attr("class", "city");
+                    console.log('line and data ', line);
+                    city.append("path")
+                        .attr("class", "line")
+                        .attr("d", function (d) { return line(d.values); }) //check line fn above
+                        .style("stroke", function (d) { return color(d.name); });
+                    city.append("text")
+                        .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; })
+                        .attr("transform", function (d) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
+                        .attr("x", 3)
+                        .attr("dy", ".35em")
+                        .text(function (d) { return d.name; });
+                }
             };
         }
         MultiLineChart.factory = function () {
@@ -472,30 +516,3 @@ var AnalyticsDirectives;
 //         })
 //     };
 // }); 
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-'use strict';
-var AnalyticsDirectives;
-(function (AnalyticsDirectives) {
-    var PieChart = (function () {
-        function PieChart() {
-            this.restrict = 'E';
-            this.replace = true;
-            //transclude: boolean = true;
-            this.templateUrl = '../app/directives/pieChart/pieChart.html';
-            //constructor(){}
-            this.link = function ($scope, el, attrs) {
-                console.log('pie chart directive is loaded');
-            };
-        }
-        PieChart.factory = function () {
-            var directive = function () {
-                return new PieChart();
-            };
-            directive.$inject = [];
-            return directive;
-        };
-        return PieChart;
-    })();
-    AnalyticsDirectives.PieChart = PieChart;
-    angular.module('analyticsApp').directive('pieChart', PieChart.factory());
-})(AnalyticsDirectives || (AnalyticsDirectives = {}));

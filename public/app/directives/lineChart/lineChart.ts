@@ -49,9 +49,9 @@ module AnalyticsDirectives{
                 });
             }
 		    
-            //based on http://bl.ocks.org/mbostock/3883245
-            function drawChart(w: number = 960){
-
+            
+            function drawChart(w: number = 960){    //based on http://bl.ocks.org/mbostock/3883245
+                
                 var margin = { top: 50, right: 50, bottom: 50, left: 100 },
                     width = w - margin.left - margin.right,
                     height = w/2 - margin.top - margin.bottom;
