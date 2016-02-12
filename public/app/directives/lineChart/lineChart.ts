@@ -98,8 +98,7 @@ module AnalyticsDirectives{
 		static factory(): angular.IDirectiveFactory {
 			var directive: angular.IDirectiveFactory = ($timeout: angular.ITimeoutService) => {
 					return new LineChart($timeout);
-			}
-
+			};
 			directive.$inject = ['$timeout'];
 			return directive;
 		}
