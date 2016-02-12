@@ -12,15 +12,15 @@ module AnalyticsDirectives{
 			data: '='
 		}
 
-		constructor(private $timeout: angular.ITimeoutService){}
+        //todo: remove $timeout dependency here and in facvtory() fn
+		constructor(private $timeout: angular.ITimeoutService){} 
 		
 		// you can set $scope to implement certain interface that extends angular.IScope, 
 		// but then you will tie the directive to one data set and it will not be
 		// reusable, therefore use 'any' instead
-        // el: angular.IAugmentedJQuery
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
 			
-            var elWidth, elHeight, data = $scope.data;
+            var elWidth: number, elHeight: number, data = $scope.data;
             
             if($scope.data){
                 convertDates();

@@ -21,6 +21,32 @@
     }
 })(angular);
 /// <reference path="../../typings/angularjs/angular.d.ts" />
+'use strict';
+var AnalyticsServices;
+(function (AnalyticsServices) {
+    var CodesService = (function () {
+        function CodesService($q, $http) {
+            this.$q = $q;
+            this.$http = $http;
+        }
+        CodesService.prototype.GetCodeDeliveries = function () {
+            var q = this.$q.defer();
+            var codeDeliveriesData = [
+                {
+                    date: '23-Jan-2016',
+                    codes: 34242
+                }
+            ];
+            q.resolve(codeDeliveriesData);
+            return q.promise;
+        };
+        CodesService.$inject = ['$q', '$http'];
+        return CodesService;
+    })();
+    AnalyticsServices.CodesService = CodesService;
+    angular.module('analyticsApp').service('CodesService', CodesService);
+})(AnalyticsServices || (AnalyticsServices = {}));
+/// <reference path="../../typings/angularjs/angular.d.ts" />
 var AnalyticsServices;
 (function (AnalyticsServices) {
     var UsersService = (function () {
@@ -120,18 +146,22 @@ var AnalyticsServices;
         return UsersService;
     })();
     AnalyticsServices.UsersService = UsersService;
-    angular.module('analyticsApp').service('usersService', UsersService);
+    angular.module('analyticsApp').service('UsersService', UsersService);
 })(AnalyticsServices || (AnalyticsServices = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../services/usersService.ts" />
+/// <reference path="../../services/codesService.ts" />
 var AnalyticsControllers;
 (function (AnalyticsControllers) {
     var OverviewController = (function () {
-        function OverviewController($window, $scope, usersService) {
+        function OverviewController($window, $scope, UsersService, CodesService) {
             this.$window = $window;
             this.$scope = $scope;
-            this.usersService = usersService;
+            this.UsersService = UsersService;
+            this.CodesService = CodesService;
             this.GetUsersData();
+            this.GetCodeDeliveriesData();
+            //data="vm.codeDeliveriesData"
             //needed to make the chart directives responsive
             angular.element($window).on('resize', function () {
                 $scope.$apply();
@@ -139,14 +169,23 @@ var AnalyticsControllers;
         }
         OverviewController.prototype.GetUsersData = function () {
             var _this = this;
-            this.usersService.GetUsers()
+            this.UsersService.GetUsers()
                 .then(function (usersData) {
                 _this.usersData = usersData;
             }, function (error) {
                 console.log('there was an error fetching users');
             });
         };
-        OverviewController.$inject = ['$window', '$scope', 'usersService'];
+        OverviewController.prototype.GetCodeDeliveriesData = function () {
+            var _this = this;
+            this.CodesService.GetCodeDeliveries()
+                .then(function (codeDeliveriesData) {
+                _this.codeDeliveriesData = codeDeliveriesData;
+            }, function (error) {
+                console.log('there was an error fetching code deliveries');
+            });
+        };
+        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService'];
         return OverviewController;
     })();
     AnalyticsControllers.OverviewController = OverviewController;
@@ -159,6 +198,7 @@ var AnalyticsControllers;
 var AnalyticsDirectives;
 (function (AnalyticsDirectives) {
     var LineChart = (function () {
+        //todo: remove $timeout dependency here and in facvtory() fn
         function LineChart($timeout) {
             this.$timeout = $timeout;
             this.restrict = 'E';
@@ -170,7 +210,6 @@ var AnalyticsDirectives;
             // you can set $scope to implement certain interface that extends angular.IScope, 
             // but then you will tie the directive to one data set and it will not be
             // reusable, therefore use 'any' instead
-            // el: angular.IAugmentedJQuery
             this.link = function ($scope, el, attrs) {
                 var elWidth, elHeight, data = $scope.data;
                 if ($scope.data) {
@@ -250,9 +289,18 @@ var AnalyticsDirectives;
         function MultiLineChart() {
             this.restrict = 'E';
             this.templateUrl = '../app/directives/multiLineChart/multiLineChart.html';
+            this.scope = {
+                data: '='
+            };
             //constructor(){}
+            // you can set $scope to implement certain interface that extends angular.IScope, 
+            // but then you will tie the directive to one data set and it will not be
+            // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
-                console.log('multi line chart directive is loaded');
+                var elWidth, elHeight, data = $scope.data;
+                //d3 chart starts
+                //based on http://bl.ocks.org/mbostock/3884955
+                //d3 chart ends
             };
         }
         MultiLineChart.factory = function () {

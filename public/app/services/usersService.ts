@@ -104,7 +104,7 @@ module AnalyticsServices {
 		}
 	}
 
-	angular.module('analyticsApp').service('usersService', UsersService);
+	angular.module('analyticsApp').service('UsersService', UsersService);
 }
 
 interface IUserData{
