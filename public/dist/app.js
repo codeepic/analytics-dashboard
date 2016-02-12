@@ -61,55 +61,55 @@ var AnalyticsServices;
             var q = this.$q.defer();
             var usersData = [
                 {
-                    date: '10/01/2016',
+                    date: '10-Jan-2016',
                     users: 0
                 },
                 {
-                    date: '11/01/2016',
+                    date: '11-Jan-2016',
                     users: 7345
                 },
                 {
-                    date: '12/01/2016',
+                    date: '12-Jan-2016',
                     users: 11837
                 },
                 {
-                    date: '13/01/2016',
+                    date: '13-Jan-2016',
                     users: 13892
                 },
                 {
-                    date: '14/01/2016',
+                    date: '14-Jan-2016',
                     users: 16373
                 },
                 {
-                    date: '15/01/2016',
+                    date: '15-Jan-2016',
                     users: 24093
                 },
                 {
-                    date: '16/01/2016',
+                    date: '16-Jan-2016',
                     users: 27932
                 },
                 {
-                    date: '17/01/2016',
+                    date: '17-Jan-2016',
                     users: 35838
                 },
                 {
-                    date: '18/01/2016',
+                    date: '18-Jan-2016',
                     users: 36728
                 },
                 {
-                    date: '19/01/2016',
+                    date: '19-Jan-2016',
                     users: 42748
                 },
                 {
-                    date: '20/01/2016',
+                    date: '20-Jan-2016',
                     users: 46728
                 },
                 {
-                    date: '21/01/2016',
+                    date: '21-Jan-2016',
                     users: 47282
                 },
                 {
-                    date: '22/01/2016',
+                    date: '22-Jan-2016',
                     users: 48372
                 }
             ];
@@ -147,6 +147,8 @@ var AnalyticsControllers;
     angular.module('analyticsApp').controller('OverviewController', OverviewController);
 })(AnalyticsControllers || (AnalyticsControllers = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/d3/d3.d.ts" />
+/// <reference path="../../services/usersService.ts" />
 'use strict';
 var AnalyticsDirectives;
 (function (AnalyticsDirectives) {
@@ -163,7 +165,45 @@ var AnalyticsDirectives;
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
                 console.log('line chart directive is loaded, its data: ', $scope.data);
-                //set D3 chart here
+                //var data: Array<IUserData> = $scope.data;
+                //var data: any = $scope.data;
+                drawChart();
+                function drawChart() {
+                    var margin = { top: 20, right: 20, bottom: 30, left: 50 }, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+                    var data = $scope.data.map(function (d) {
+                        var formatDate = d3.time.format("%d-%b-%Y");
+                        d.date = formatDate.parse(d.date);
+                        return d;
+                    });
+                    var x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
+                    var line = d3.svg.line()
+                        .x(function (d) { return x(d.date); })
+                        .y(function (d) { return y(d.users); });
+                    var svg = d3.select(".line-chart").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    x.domain(d3.extent(data, function (d) { return d.date; }));
+                    y.domain(d3.extent(data, function (d) { return d.users; }));
+                    svg.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(xAxis);
+                    svg.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis)
+                        .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", ".71em")
+                        .style("text-anchor", "end")
+                        .text("Users");
+                    svg.append("path")
+                        .datum(data)
+                        .attr("class", "line")
+                        .attr("d", line);
+                }
             };
         }
         LineChart.factory = function () {
