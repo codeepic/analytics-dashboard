@@ -36,7 +36,7 @@ module AnalyticsDirectives{
             var line = d3.svg.line()
                 .interpolate("basis")
                 .x(function(d: any) { return x(d.date); })
-                .y(function(d: any) { return y(d.temperature); });
+                .y(function(d: any) { return y(d.codes); });
 
             var svg = d3.select(".multi-line-chart").append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -51,8 +51,8 @@ module AnalyticsDirectives{
             });
             console.log('data after parsing date: ', data);
             // var cities = color.domain().map(function(name) {
-            //var apps: Array<IApp> = color.domain().map(function(name) {
-            var apps = color.domain().map(function(name) {
+            var apps: Array<IApp> = color.domain().map(function(name) {
+            //var apps = color.domain().map(function(name) {
                 return {
                     name: name,
                     values: data.map(function(d) {
@@ -93,12 +93,12 @@ module AnalyticsDirectives{
 
             city.append("path")
                 .attr("class", "line")
-                .attr("d", function(d) { return line(d.values); })
+                .attr("d", function(d: any) { return line(d.values); }) //check line fn in line 36
                 .style("stroke", function(d) { return color(d.name); });
 
             city.append("text")
                 .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-                .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
+                .attr("transform", function(d: any) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
                 .attr("x", 3)
                 .attr("dy", ".35em")
                 .text(function(d) { return d.name; });

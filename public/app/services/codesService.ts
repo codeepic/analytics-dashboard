@@ -88,9 +88,9 @@ module AnalyticsServices {
                 },
                 {
                     date: '20160122',
-                    web: 5382,
-                    iphone: 4745,
-                    android: 4748
+                    web: 3382,
+                    iphone: 7745,
+                    android: 5748
                 }
             ];
             

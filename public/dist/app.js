@@ -106,9 +106,9 @@ var AnalyticsServices;
                 },
                 {
                     date: '20160122',
-                    web: 5382,
-                    iphone: 4745,
-                    android: 4748
+                    web: 3382,
+                    iphone: 7745,
+                    android: 5748
                 }
             ];
             q.resolve(codeDeliveriesData);
@@ -381,7 +381,7 @@ var AnalyticsDirectives;
                 var line = d3.svg.line()
                     .interpolate("basis")
                     .x(function (d) { return x(d.date); })
-                    .y(function (d) { return y(d.temperature); });
+                    .y(function (d) { return y(d.codes); });
                 var svg = d3.select(".multi-line-chart").append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
@@ -393,8 +393,8 @@ var AnalyticsDirectives;
                 });
                 console.log('data after parsing date: ', data);
                 // var cities = color.domain().map(function(name) {
-                //var apps: Array<IApp> = color.domain().map(function(name) {
                 var apps = color.domain().map(function (name) {
+                    //var apps = color.domain().map(function(name) {
                     return {
                         name: name,
                         values: data.map(function (d) {
@@ -428,7 +428,7 @@ var AnalyticsDirectives;
                 console.log('line and data ', line);
                 city.append("path")
                     .attr("class", "line")
-                    .attr("d", function (d) { return line(d.values); })
+                    .attr("d", function (d) { return line(d.values); }) //check line fn in line 36
                     .style("stroke", function (d) { return color(d.name); });
                 city.append("text")
                     .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; })

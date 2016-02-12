@@ -1,4 +1,5 @@
-.multi-line-chart { //this is horse shit - remove it it doesn ot apply to multi lien chart
+.multi-line-chart {
+    //todo: these styles are the same as in .line-chart - maybe should be moved into mixins
     .axis path,
     .axis line {
         fill: none;
@@ -6,13 +7,9 @@
         shape-rendering: crispEdges;
     }
 
-    // .x.axis path {
-    //     display: none;
-    // }
-
     .line {
         fill: none;
         stroke: steelblue;
-        stroke-width: 1.5px;
+        stroke-width: 3.5px;
     }
 }

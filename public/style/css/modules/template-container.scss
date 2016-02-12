@@ -6,10 +6,11 @@
     padding: 20px;
 }
 
-//should be in separate files, kept here for now for convenience
+//todo: move to another module
 .line-chart,
 .pie-chart,
 .multi-line-chart{
+    font-size: 0.75em; //12/16 
 	border: 1px solid $veryLightGrey;
 	min-height: 250px;
 	margin-top: 20px;
