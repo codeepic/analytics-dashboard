@@ -127,9 +127,15 @@ var AnalyticsServices;
 var AnalyticsControllers;
 (function (AnalyticsControllers) {
     var OverviewController = (function () {
-        function OverviewController(usersService) {
+        function OverviewController($window, $scope, usersService) {
+            this.$window = $window;
+            this.$scope = $scope;
             this.usersService = usersService;
             this.GetUsersData();
+            //needed to make the chart directives responsive
+            // angular.element($window).on('resize', () => {
+            //     $scope.$apply();
+            // });
         }
         OverviewController.prototype.GetUsersData = function () {
             var _this = this;
@@ -140,7 +146,7 @@ var AnalyticsControllers;
                 console.log('there was an error fetching users');
             });
         };
-        OverviewController.$inject = ['usersService'];
+        OverviewController.$inject = ['$window', '$scope', 'usersService'];
         return OverviewController;
     })();
     AnalyticsControllers.OverviewController = OverviewController;
@@ -156,6 +162,7 @@ var AnalyticsDirectives;
         function LineChart() {
             this.restrict = 'E';
             this.templateUrl = '../app/directives/lineChart/lineChart.html';
+            this.replace = true;
             this.scope = {
                 data: '='
             };
@@ -163,13 +170,31 @@ var AnalyticsDirectives;
             // you can set $scope to implement certain interface that extends angular.IScope, 
             // but then you will tie the directive to one data set and it will not be
             // reusable, therefore use 'any' instead
+            // el: angular.IAugmentedJQuery
             this.link = function ($scope, el, attrs) {
-                console.log('line chart directive is loaded, its data: ', $scope.data);
-                //var data: Array<IUserData> = $scope.data;
-                //var data: any = $scope.data;
+                var elWidth, elHeight;
+                // $scope.$watch(function(){
+                //     // width = el.clientWidth;
+                //     // height = el.clientHeight;
+                //     elWidth = el.context.clientWidth;
+                //     elHeight = el.context.clientHeight;
+                //     //console.log('watcher dir: w: ', elWidth, ' h: ', elHeight);
+                //     return elWidth * elHeight; 
+                // }, resize);
+                // function resize(){
+                //     //console.log('res dir');
+                //     elWidth = el.context.clientWidth;
+                //     elHeight = el.context.clientHeight;
+                //     //drawChart(elWidth, elHeight);
+                //     drawChart();
+                // }
                 drawChart();
                 function drawChart() {
-                    var margin = { top: 20, right: 20, bottom: 30, left: 50 }, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+                    //var margin = { top: 20, right: 20, bottom: 30, left: 50 },
+                    // var margin = { top: 50, right: 100, bottom: 50, left: 100 },
+                    // 	width = 960 - margin.left - margin.right,
+                    // 	height = 500 - margin.top - margin.bottom;
+                    var margin = { top: 50, right: 100, bottom: 50, left: 100 }, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
                     var data = $scope.data.map(function (d) {
                         var formatDate = d3.time.format("%d-%b-%Y");
                         d.date = formatDate.parse(d.date);
@@ -195,8 +220,7 @@ var AnalyticsDirectives;
                         .call(yAxis)
                         .append("text")
                         .attr("transform", "rotate(-90)")
-                        .attr("y", 6)
-                        .attr("dy", ".71em")
+                        .attr("y", 16)
                         .style("text-anchor", "end")
                         .text("Users");
                     svg.append("path")

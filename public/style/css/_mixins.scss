@@ -17,6 +17,9 @@ $whiteSmoke: #ededed;               // often used for backgrounds
 $freeSpeechRed: #d80000;
 $darkPastelGreen: #00ac24;
 
+//chart colours
+ $bahia: #86cc1c;
+
 @mixin transition-mixin($t: 0.3s) {
     -moz-transition: all $t ease;
     -o-transition: all $t ease;

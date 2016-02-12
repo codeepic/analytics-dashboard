@@ -8,6 +8,7 @@ module AnalyticsDirectives{
 	export class LineChart implements angular.IDirective {
 		restrict: string = 'E';
 		templateUrl: string = '../app/directives/lineChart/lineChart.html';
+        replace: boolean = true;
 		scope = {
 			data: '='
 		}
@@ -17,18 +18,39 @@ module AnalyticsDirectives{
 		// you can set $scope to implement certain interface that extends angular.IScope, 
 		// but then you will tie the directive to one data set and it will not be
 		// reusable, therefore use 'any' instead
+        // el: angular.IAugmentedJQuery
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
-			console.log('line chart directive is loaded, its data: ', $scope.data );
-
-			//var data: Array<IUserData> = $scope.data;
-            //var data: any = $scope.data;
-
-            drawChart();
 			
+            var elWidth, elHeight;
+            
+            // $scope.$watch(function(){
+            //     // width = el.clientWidth;
+            //     // height = el.clientHeight;
+            //     elWidth = el.context.clientWidth;
+            //     elHeight = el.context.clientHeight;
+            //     //console.log('watcher dir: w: ', elWidth, ' h: ', elHeight);
+            //     return elWidth * elHeight; 
+            // }, resize);
+
+            // function resize(){
+            //     //console.log('res dir');
+            //     elWidth = el.context.clientWidth;
+            //     elHeight = el.context.clientHeight;
+            //     //drawChart(elWidth, elHeight);
+            //     drawChart();
+            // }
+            
+            drawChart();
+		    
             function drawChart(){
-                var margin = { top: 20, right: 20, bottom: 30, left: 50 },
-					width = 960 - margin.left - margin.right,
-					height = 500 - margin.top - margin.bottom;
+                //var margin = { top: 20, right: 20, bottom: 30, left: 50 },
+                // var margin = { top: 50, right: 100, bottom: 50, left: 100 },
+				// 	width = 960 - margin.left - margin.right,
+				// 	height = 500 - margin.top - margin.bottom;
+                    
+                var margin = { top: 50, right: 100, bottom: 50, left: 100 },
+                    width = 960 - margin.left - margin.right,
+                    height = 500 - margin.top - margin.bottom;
 
                 var data = $scope.data.map((d) => {
                     var formatDate = d3.time.format("%d-%b-%Y");
@@ -64,8 +86,8 @@ module AnalyticsDirectives{
                     .call(yAxis)
                     .append("text")
                     .attr("transform", "rotate(-90)")
-                    .attr("y", 6)
-                    .attr("dy", ".71em")
+                    .attr("y", 16)
+                    //.attr("dy", "1.71em")
                     .style("text-anchor", "end")
                     .text("Users");
 

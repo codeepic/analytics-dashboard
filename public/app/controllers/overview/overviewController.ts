@@ -4,12 +4,21 @@
 module AnalyticsControllers {
 	export class OverviewController {
 
-		static $inject = ['usersService'];
+		static $inject = ['$window', '$scope', 'usersService'];
 
 		private usersData: Array<IUserData>;
 
-		constructor(private usersService: AnalyticsServices.UsersService) {
+		constructor(
+            private $window: angular.IWindowService,
+            private $scope: angular.IScope,
+            private usersService: AnalyticsServices.UsersService
+        ) {
 			this.GetUsersData();
+            
+            //needed to make the chart directives responsive
+            // angular.element($window).on('resize', () => {
+            //     $scope.$apply();
+            // });
 		}
 
 		public GetUsersData() {
