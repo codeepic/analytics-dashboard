@@ -160,7 +160,6 @@ var AnalyticsDirectives;
 (function (AnalyticsDirectives) {
     var LineChart = (function () {
         function LineChart($timeout) {
-            var _this = this;
             this.$timeout = $timeout;
             this.restrict = 'E';
             this.templateUrl = '../app/directives/lineChart/lineChart.html';
@@ -173,7 +172,7 @@ var AnalyticsDirectives;
             // reusable, therefore use 'any' instead
             // el: angular.IAugmentedJQuery
             this.link = function ($scope, el, attrs) {
-                var data = $scope.data, elWidth, elHeight, that = _this; //todo: how I love these tricks? any way not to use it?
+                var elWidth, elHeight, data = $scope.data;
                 if ($scope.data) {
                     convertDates();
                     drawChart();
@@ -183,16 +182,12 @@ var AnalyticsDirectives;
                     elWidth = el.context.clientWidth;
                     elHeight = el.context.clientHeight;
                     return elWidth * elHeight;
-                }, resizeChart);
-                //how to make sure that drawing is called only once, not for every resize?
-                function resizeChart() {
-                    //elWidth = el.context.clientWidth;
-                    //elHeight = el.context.clientHeight;
-                    console.log('resized');
-                    that.$timeout(function () {
-                        removeChart();
-                        drawChart(elWidth);
-                    }, 3000);
+                }, function () {
+                    removeChart();
+                    drawChart(elWidth);
+                });
+                function removeChart() {
+                    d3.select('.line-chart svg').remove();
                 }
                 function convertDates() {
                     data = data.map(function (d) {
@@ -201,18 +196,10 @@ var AnalyticsDirectives;
                         return d;
                     });
                 }
-                function removeChart() {
-                    d3.select('.line-chart svg').remove();
-                }
-                function drawChart(w, h) {
+                //based on http://bl.ocks.org/mbostock/3883245
+                function drawChart(w) {
                     if (w === void 0) { w = 960; }
-                    if (h === void 0) { h = 500; }
-                    console.log('drawing');
-                    //var margin = { top: 20, right: 20, bottom: 30, left: 50 },
-                    // var margin = { top: 50, right: 100, bottom: 50, left: 100 },
-                    // 	width = 960 - margin.left - margin.right,
-                    // 	height = 500 - margin.top - margin.bottom;
-                    var margin = { top: 50, right: 100, bottom: 50, left: 100 }, width = w - margin.left - margin.right, height = h - margin.top - margin.bottom;
+                    var margin = { top: 50, right: 50, bottom: 50, left: 100 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
                     var x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
                     var line = d3.svg.line()
                         .x(function (d) { return x(d.date); })

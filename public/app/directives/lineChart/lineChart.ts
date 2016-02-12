@@ -1,7 +1,6 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/usersService.ts" />
-
 'use strict';
 
 module AnalyticsDirectives{
@@ -21,9 +20,7 @@ module AnalyticsDirectives{
         // el: angular.IAugmentedJQuery
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
 			
-            var data = $scope.data,
-                elWidth, elHeight,
-                that = this;            //todo: how I love these tricks? any way not to use it?
+            var elWidth, elHeight, data = $scope.data;
             
             if($scope.data){
                 convertDates();
@@ -31,24 +28,19 @@ module AnalyticsDirectives{
             }
             
             //resize the chart on browser resize
-            $scope.$watch(function(){
+            $scope.$watch(() => {
                 elWidth = el.context.clientWidth;
                 elHeight = el.context.clientHeight;
                 return elWidth * elHeight; 
-            }, resizeChart);
+            }, () => {
+                removeChart();
+                drawChart(elWidth);
+            });
 
-            //how to make sure that drawing is called only once, not for every resize?
-
-            function resizeChart(){
-                //elWidth = el.context.clientWidth;
-                //elHeight = el.context.clientHeight;
-                console.log('resized');
-                that.$timeout(() => {   //debounce, so it's not called mid window resize
-                    removeChart();
-                    drawChart(elWidth);
-                }, 3000);
+            function removeChart(){
+                d3.select('.line-chart svg').remove();
             }
-
+            
             function convertDates(){
                 data = data.map((d) => {
                     var formatDate = d3.time.format("%d-%b-%Y");
@@ -57,20 +49,12 @@ module AnalyticsDirectives{
                 });
             }
 		    
-            function removeChart(){
-                d3.select('.line-chart svg').remove();
-            }
-            
-            function drawChart(w: number = 960, h: number = 500){
-                console.log('drawing');
-                //var margin = { top: 20, right: 20, bottom: 30, left: 50 },
-                // var margin = { top: 50, right: 100, bottom: 50, left: 100 },
-				// 	width = 960 - margin.left - margin.right,
-				// 	height = 500 - margin.top - margin.bottom;
-                    
-                var margin = { top: 50, right: 100, bottom: 50, left: 100 },
+            //based on http://bl.ocks.org/mbostock/3883245
+            function drawChart(w: number = 960){
+
+                var margin = { top: 50, right: 50, bottom: 50, left: 100 },
                     width = w - margin.left - margin.right,
-                    height = h - margin.top - margin.bottom;
+                    height = w/2 - margin.top - margin.bottom;
 
                 var x = d3.time.scale().range([0, width]),
                     y = d3.scale.linear().range([height, 0]),
@@ -101,7 +85,6 @@ module AnalyticsDirectives{
                     .append("text")
                     .attr("transform", "rotate(-90)")
                     .attr("y", 16)
-                    //.attr("dy", "1.71em")
                     .style("text-anchor", "end")
                     .text("Users");
 
