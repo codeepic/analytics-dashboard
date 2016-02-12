@@ -25,8 +25,10 @@ module AnalyticsDirectives{
                 elWidth, elHeight,
                 that = this;            //todo: how I love these tricks? any way not to use it?
             
-            convertDates();
-            drawChart();
+            if($scope.data){
+                convertDates();
+                drawChart();
+            }
             
             //resize the chart on browser resize
             $scope.$watch(function(){
@@ -35,14 +37,16 @@ module AnalyticsDirectives{
                 return elWidth * elHeight; 
             }, resizeChart);
 
+            //how to make sure that drawing is called only once, not for every resize?
+
             function resizeChart(){
                 //elWidth = el.context.clientWidth;
                 //elHeight = el.context.clientHeight;
-                
+                console.log('resized');
                 that.$timeout(() => {   //debounce, so it's not called mid window resize
                     removeChart();
-                    drawChart();
-                }, 4000);
+                    drawChart(elWidth);
+                }, 3000);
             }
 
             function convertDates(){
@@ -57,7 +61,7 @@ module AnalyticsDirectives{
                 d3.select('.line-chart svg').remove();
             }
             
-            function drawChart(){
+            function drawChart(w: number = 960, h: number = 500){
                 console.log('drawing');
                 //var margin = { top: 20, right: 20, bottom: 30, left: 50 },
                 // var margin = { top: 50, right: 100, bottom: 50, left: 100 },
@@ -65,8 +69,8 @@ module AnalyticsDirectives{
 				// 	height = 500 - margin.top - margin.bottom;
                     
                 var margin = { top: 50, right: 100, bottom: 50, left: 100 },
-                    width = 960 - margin.left - margin.right,
-                    height = 500 - margin.top - margin.bottom;
+                    width = w - margin.left - margin.right,
+                    height = h - margin.top - margin.bottom;
 
                 var x = d3.time.scale().range([0, width]),
                     y = d3.scale.linear().range([height, 0]),

@@ -174,21 +174,25 @@ var AnalyticsDirectives;
             // el: angular.IAugmentedJQuery
             this.link = function ($scope, el, attrs) {
                 var data = $scope.data, elWidth, elHeight, that = _this; //todo: how I love these tricks? any way not to use it?
-                convertDates();
-                drawChart();
+                if ($scope.data) {
+                    convertDates();
+                    drawChart();
+                }
                 //resize the chart on browser resize
                 $scope.$watch(function () {
                     elWidth = el.context.clientWidth;
                     elHeight = el.context.clientHeight;
                     return elWidth * elHeight;
                 }, resizeChart);
+                //how to make sure that drawing is called only once, not for every resize?
                 function resizeChart() {
                     //elWidth = el.context.clientWidth;
                     //elHeight = el.context.clientHeight;
+                    console.log('resized');
                     that.$timeout(function () {
                         removeChart();
-                        drawChart();
-                    }, 4000);
+                        drawChart(elWidth);
+                    }, 3000);
                 }
                 function convertDates() {
                     data = data.map(function (d) {
@@ -200,13 +204,15 @@ var AnalyticsDirectives;
                 function removeChart() {
                     d3.select('.line-chart svg').remove();
                 }
-                function drawChart() {
+                function drawChart(w, h) {
+                    if (w === void 0) { w = 960; }
+                    if (h === void 0) { h = 500; }
                     console.log('drawing');
                     //var margin = { top: 20, right: 20, bottom: 30, left: 50 },
                     // var margin = { top: 50, right: 100, bottom: 50, left: 100 },
                     // 	width = 960 - margin.left - margin.right,
                     // 	height = 500 - margin.top - margin.bottom;
-                    var margin = { top: 50, right: 100, bottom: 50, left: 100 }, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+                    var margin = { top: 50, right: 100, bottom: 50, left: 100 }, width = w - margin.left - margin.right, height = h - margin.top - margin.bottom;
                     var x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
                     var line = d3.svg.line()
                         .x(function (d) { return x(d.date); })
