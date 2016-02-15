@@ -1,22 +1,17 @@
 <h2>Analytics Overview</h2>
 
-<!-- <ul>
-	<li ng-repeat="user in vm.users">
-		{{user.name}} is {{user.age}} old and works as a {{user.profession}}
-	</li>
-</ul> -->
+<div>
+	<pie-chart class="left" data="vm.offersByCategoryData"></pie-chart>
+	<pie-chart class="right"></pie-chart>
+	<span class="clear"></span>
+</div>
 
 <!-- move it down again, keep it here just for ease of debuggin-->
 
 <multi-line-chart data="vm.codeDeliveriesData"></multi-line-chart> 
 
 <line-chart data='vm.usersData'></line-chart>
-
-<div>
-	<pie-chart class="left"></pie-chart>
-	<pie-chart class="right"></pie-chart>
-	<span class="clear"></span>
-</div>	
+	
 
 <!--
 <h3>Multi Line Chart</h3>

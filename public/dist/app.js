@@ -120,6 +120,68 @@ var AnalyticsServices;
     angular.module('analyticsApp').service('CodesService', CodesService);
 })(AnalyticsServices || (AnalyticsServices = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
+'use strict';
+var AnalyticsServices;
+(function (AnalyticsServices) {
+    var OffersService = (function () {
+        function OffersService($q, $http) {
+            this.$q = $q;
+            this.$http = $http;
+        }
+        OffersService.prototype.GetOffersByCategory = function () {
+            var q = this.$q.defer();
+            var offersByCategoryData = [
+                {
+                    category: 'Transport &amp; Travel',
+                    quantity: 12
+                },
+                {
+                    category: 'Entertainment',
+                    quantity: 9
+                },
+                {
+                    category: 'Retail &amp; Fashion',
+                    quantity: 2
+                },
+                {
+                    category: 'Food &amp; Drink',
+                    quantity: 14
+                },
+                {
+                    category: 'Finance',
+                    quantity: 8
+                }
+            ];
+            q.resolve(offersByCategoryData);
+            return q.promise;
+        };
+        OffersService.$inject = ['$q', '$http'];
+        return OffersService;
+    })();
+    AnalyticsServices.OffersService = OffersService;
+    angular.module('analyticsApp').service('OffersService', OffersService);
+})(AnalyticsServices || (AnalyticsServices = {}));
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="offersService.ts" />
+'use strict';
+var AnalyticsServices;
+(function (AnalyticsServices) {
+    var ColoursService = (function () {
+        function ColoursService() {
+            this.colours = {
+                flamingo: '#e94d5b',
+                atlantis: '#89c541',
+                sun: '#f47a37',
+                wildBlueYonder: '#8089c2',
+                summerSky: '#1db0e6' //blue
+            };
+        }
+        return ColoursService;
+    })();
+    AnalyticsServices.ColoursService = ColoursService;
+    angular.module('analyticsApp').service('ColoursService', ColoursService);
+})(AnalyticsServices || (AnalyticsServices = {}));
+/// <reference path="../../typings/angularjs/angular.d.ts" />
 var AnalyticsServices;
 (function (AnalyticsServices) {
     var UsersService = (function () {
@@ -220,19 +282,69 @@ var AnalyticsServices;
     AnalyticsServices.UsersService = UsersService;
     angular.module('analyticsApp').service('UsersService', UsersService);
 })(AnalyticsServices || (AnalyticsServices = {}));
+// 
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="offersService.ts" />
+'use strict';
+var AnalyticsServices;
+(function (AnalyticsServices) {
+    var VendorsService = (function () {
+        function VendorsService($q, $http) {
+            this.$q = $q;
+            this.$http = $http;
+        }
+        VendorsService.prototype.GetVendorsByCategory = function () {
+            var q = this.$q.defer();
+            var vendorsByCategoryData = [
+                {
+                    category: 'Transport &amp; Travel',
+                    quantity: 10
+                },
+                {
+                    category: 'Entertainment',
+                    quantity: 20
+                },
+                {
+                    category: 'Retail &amp; Fashion',
+                    quantity: 40
+                },
+                {
+                    category: 'Food &amp; Drink',
+                    quantity: 80
+                },
+                {
+                    category: 'Finance',
+                    quantity: 160
+                }
+            ];
+            q.resolve(vendorsByCategoryData);
+            return q.promise;
+        };
+        VendorsService.$inject = ['$q', '$http'];
+        return VendorsService;
+    })();
+    AnalyticsServices.VendorsService = VendorsService;
+    angular.module('analyticsApp').service('VendorsService', VendorsService);
+})(AnalyticsServices || (AnalyticsServices = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../services/usersService.ts" />
 /// <reference path="../../services/codesService.ts" />
+/// <reference path="../../services/offersService.ts" />
+/// <reference path="../../services/vendorsService.ts" />
 var AnalyticsControllers;
 (function (AnalyticsControllers) {
     var OverviewController = (function () {
-        function OverviewController($window, $scope, UsersService, CodesService) {
+        function OverviewController($window, $scope, UsersService, CodesService, OffersService, VendorsService) {
             this.$window = $window;
             this.$scope = $scope;
             this.UsersService = UsersService;
             this.CodesService = CodesService;
+            this.OffersService = OffersService;
+            this.VendorsService = VendorsService;
             this.GetUsersData();
             this.GetCodeDeliveriesData();
+            this.GetOffersByCategoryData();
+            this.GetVendorsByCategoryData();
             //data="vm.codeDeliveriesData"
             //needed to make the chart directives responsive
             angular.element($window).on('resize', function () {
@@ -257,7 +369,25 @@ var AnalyticsControllers;
                 console.log('there was an error fetching code deliveries');
             });
         };
-        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService'];
+        OverviewController.prototype.GetOffersByCategoryData = function () {
+            var _this = this;
+            this.OffersService.GetOffersByCategory()
+                .then(function (offersByCategoryData) {
+                _this.offersByCategoryData = offersByCategoryData;
+            }, function (error) {
+                console.log('there was an error fetching offers by category data');
+            });
+        };
+        OverviewController.prototype.GetVendorsByCategoryData = function () {
+            var _this = this;
+            this.VendorsService.GetVendorsByCategory()
+                .then(function (vendorsByCategoryData) {
+                _this.offersByCategoryData = vendorsByCategoryData;
+            }, function (error) {
+                console.log('there was an error fetching vendors by category data');
+            });
+        };
+        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
         return OverviewController;
     })();
     AnalyticsControllers.OverviewController = OverviewController;
@@ -371,7 +501,7 @@ var AnalyticsDirectives;
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
                 var parseDate, elWidth, elHeight, data = $scope.data;
-                if ($scope.data) {
+                if (data) {
                     convertDates();
                     drawChart();
                 }
@@ -484,25 +614,70 @@ var AnalyticsDirectives;
 //     };
 // }); 
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/d3/d3.d.ts" />
+/// <reference path="../../services/coloursService.ts" />
 'use strict';
 var AnalyticsDirectives;
 (function (AnalyticsDirectives) {
     var PieChart = (function () {
-        function PieChart() {
+        function PieChart(ColoursService) {
+            var _this = this;
+            this.ColoursService = ColoursService;
             this.restrict = 'E';
             this.replace = true;
-            //transclude: boolean = true;
             this.templateUrl = '../app/directives/pieChart/pieChart.html';
-            //constructor(){}
-            this.link = function ($scope, el, attrs) {
-                console.log('pie chart directive is loaded');
+            this.scope = {
+                data: '='
             };
+            // you can set $scope to implement certain interface that extends angular.IScope, 
+            // but then you will tie the directive to one data set and it will not be
+            // reusable, therefore use 'any' instead
+            this.link = function ($scope, el, attrs) {
+                var data = $scope.data, that = _this;
+                if (data) {
+                    drawChart();
+                }
+                //resize chart on browser resize
+                //fn goes here
+                function drawChart() {
+                    var width = 960, height = 500, radius = Math.min(width, height) / 2;
+                    //DEBUG                    
+                    //var colourValuesArr = d3.values(that.ColoursService.colours);
+                    //var colour = d3.scale.ordinal().range(colourValuesArr);
+                    //console.log('colourValuesArr: ', colourValuesArr, ' colour: ', colour);
+                    var colourValues = d3.scale.ordinal().range(d3.values(that.ColoursService.colours));
+                    //var colourValues = d3.scale.ordinal().range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+                    var arc = d3.svg.arc()
+                        .outerRadius(radius - 10)
+                        .innerRadius(radius - 70);
+                    var pie = d3.layout.pie()
+                        .sort(null)
+                        .value(function (d) { return d.quantity; });
+                    var svg = d3.select('.pie-chart').append('svg')
+                        .attr('width', width)
+                        .attr('height', height)
+                        .append('g')
+                        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+                    var g = svg.selectAll('.arc')
+                        .data(pie(data))
+                        .enter().append('g')
+                        .attr('class', 'arc');
+                    g.append('path')
+                        .attr('d', arc)
+                        .style('fill', function (d) {
+                        //console.log('i: ', i, 'colour: ', colour, 'colour i: ', colour[i]);
+                        //return colour[i];
+                        return colourValues(d.data.category);
+                    });
+                }
+            };
+            console.log('chartColours service: ', this.ColoursService.colours);
         }
         PieChart.factory = function () {
-            var directive = function () {
-                return new PieChart();
+            var directive = function (ColoursService) {
+                return new PieChart(ColoursService);
             };
-            directive.$inject = [];
+            directive.$inject = ['ColoursService'];
             return directive;
         };
         return PieChart;

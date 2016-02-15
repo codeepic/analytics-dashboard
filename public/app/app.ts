@@ -7,8 +7,8 @@
 // analyticsApp.direcitves
 // analyticsApp.services modules as dependencies
 	angular.module('analyticsApp', ['ngRoute'])
-		.config(config);
-
+        .config(config);
+    
 	function config($routeProvider, $locationProvider) {
 		$locationProvider.html5Mode(true);
 
@@ -22,4 +22,5 @@
 				redirectTo: '/'
 			});
 	}
+    
 })(angular);

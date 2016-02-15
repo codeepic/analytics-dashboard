@@ -20,7 +20,7 @@ module AnalyticsDirectives{
             
             var parseDate, elWidth: number, elHeight: number, data = $scope.data;
             
-            if($scope.data){
+            if(data){
                 convertDates();
                 drawChart();
             }
@@ -120,8 +120,6 @@ module AnalyticsDirectives{
                     .attr("dy", ".35em")
                     .text(function(d) { return d.name; });
             }
-            
-            
 		};
 
 		static factory(): angular.IDirectiveFactory {
