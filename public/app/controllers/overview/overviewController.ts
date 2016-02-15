@@ -64,7 +64,7 @@ module AnalyticsControllers {
         private GetVendorsByCategoryData() {
             this.VendorsService.GetVendorsByCategory()
 				.then((vendorsByCategoryData: Array<IByCategoryData>) =>{
-					this.offersByCategoryData = vendorsByCategoryData;
+					this.vendorsByCategoryData = vendorsByCategoryData;
 				}, (error) => {
 					console.log('there was an error fetching vendors by category data');
 				});
