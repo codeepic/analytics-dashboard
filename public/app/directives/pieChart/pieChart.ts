@@ -9,12 +9,14 @@ module AnalyticsDirectives{
 		replace: boolean = true;
 		templateUrl: string = '../app/directives/pieChart/pieChart.html';
         scope = {
+            chartName: '@',
             className: '@',
             data: '='    
         };
         
-		constructor(private ColoursService: AnalyticsServices.ColoursService){
-            //console.log('chartColours service: ', this.ColoursService.colours);
+		constructor(private ColoursService: AnalyticsServices.ColoursService,
+        private $timeout: angular.ITimeoutService){
+            //console.log('className: ', $scope.);
         }
 
         // you can set $scope to implement certain interface that extends angular.IScope, 
@@ -23,8 +25,10 @@ module AnalyticsDirectives{
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
             var elWidth: number, elHeight: number, data = $scope.data, that = this;
             
+            console.log('class name: ', $scope.className);
+            
             if(data){
-                drawChart();    
+                this.$timeout(drawChart, 2000); //working    
             }
             
             //resize chart on browser resize
@@ -42,6 +46,7 @@ module AnalyticsDirectives{
             }
             
             function drawChart(w: number = 460){
+                console.log('drawing');
                 var width = w,
                     height = w,
                     radius = Math.min(width, height) / 2;
@@ -56,7 +61,8 @@ module AnalyticsDirectives{
                     .sort(null)
                     .value(function(d: any) {return d.quantity});
                         
-                var svg = d3.select('.pie-chart').append('svg')
+                //var svg = d3.select('.pie-chart').append('svg')
+                var svg = d3.select('.' + $scope.className).append('svg')
                     .attr('width', width)
                     .attr('height', height)
                     .append('g')
@@ -77,11 +83,11 @@ module AnalyticsDirectives{
 		};
 
 		static factory(): angular.IDirectiveFactory {
-			var directive: angular.IDirectiveFactory = (ColoursService) => {
-					return new PieChart(ColoursService);
+			var directive: angular.IDirectiveFactory = (ColoursService, $timeout) => {
+					return new PieChart(ColoursService, $timeout);
 			}
 
-			directive.$inject = ['ColoursService'];
+			directive.$inject = ['ColoursService', '$timeout'];
 			return directive;
 		}
 	}
