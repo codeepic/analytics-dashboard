@@ -33,7 +33,7 @@ module AnalyticsServices {
                 },
                 {
                     category: 'Finance',
-                    quantity: 160  
+                    quantity: 260  
                 }
             ];
             

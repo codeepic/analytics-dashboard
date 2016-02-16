@@ -314,7 +314,7 @@ var AnalyticsServices;
                 },
                 {
                     category: 'Finance',
-                    quantity: 160
+                    quantity: 260
                 }
             ];
             q.resolve(vendorsByCategoryData);
@@ -393,6 +393,95 @@ var AnalyticsControllers;
     AnalyticsControllers.OverviewController = OverviewController;
     angular.module('analyticsApp').controller('OverviewController', OverviewController);
 })(AnalyticsControllers || (AnalyticsControllers = {}));
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/d3/d3.d.ts" />
+/// <reference path="../../services/usersService.ts" />
+'use strict';
+var AnalyticsDirectives;
+(function (AnalyticsDirectives) {
+    var LineChart = (function () {
+        //todo: remove $timeout dependency here and in facvtory() fn
+        function LineChart($timeout) {
+            this.$timeout = $timeout;
+            this.restrict = 'E';
+            this.templateUrl = '../app/directives/lineChart/lineChart.html';
+            this.replace = true;
+            this.scope = {
+                data: '='
+            };
+            // you can set $scope to implement certain interface that extends angular.IScope, 
+            // but then you will tie the directive to one data set and it will not be
+            // reusable, therefore use 'any' instead
+            this.link = function ($scope, el, attrs) {
+                var elWidth, elHeight, data = $scope.data;
+                if ($scope.data) {
+                    convertDates();
+                    drawChart();
+                }
+                //resize the chart on browser resize
+                $scope.$watch(function () {
+                    elWidth = el.context.clientWidth;
+                    elHeight = el.context.clientHeight;
+                    return elWidth * elHeight;
+                }, function () {
+                    removeChart();
+                    drawChart(elWidth);
+                });
+                function removeChart() {
+                    d3.select('.line-chart svg').remove();
+                }
+                function convertDates() {
+                    data = data.map(function (d) {
+                        var formatDate = d3.time.format("%d-%b-%Y");
+                        d.date = formatDate.parse(d.date);
+                        return d;
+                    });
+                }
+                function drawChart(w) {
+                    if (w === void 0) { w = 960; }
+                    var margin = { top: 50, right: 50, bottom: 50, left: 100 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
+                    var x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
+                    var line = d3.svg.line()
+                        .x(function (d) { return x(d.date); })
+                        .y(function (d) { return y(d.users); });
+                    var svg = d3.select(".line-chart").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    x.domain(d3.extent(data, function (d) { return d.date; }));
+                    y.domain(d3.extent(data, function (d) { return d.users; }));
+                    svg.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(xAxis);
+                    svg.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis)
+                        .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 16)
+                        .style("text-anchor", "end")
+                        .text("Users");
+                    svg.append("path")
+                        .datum(data)
+                        .attr("class", "line")
+                        .attr("d", line);
+                }
+            };
+        }
+        LineChart.factory = function () {
+            var directive = function ($timeout) {
+                return new LineChart($timeout);
+            };
+            directive.$inject = ['$timeout'];
+            return directive;
+        };
+        return LineChart;
+    })();
+    AnalyticsDirectives.LineChart = LineChart;
+    angular.module('analyticsApp').directive('lineChart', LineChart.factory());
+})(AnalyticsDirectives || (AnalyticsDirectives = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 'use strict';
@@ -526,95 +615,6 @@ var AnalyticsDirectives;
 // }); 
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
-/// <reference path="../../services/usersService.ts" />
-'use strict';
-var AnalyticsDirectives;
-(function (AnalyticsDirectives) {
-    var LineChart = (function () {
-        //todo: remove $timeout dependency here and in facvtory() fn
-        function LineChart($timeout) {
-            this.$timeout = $timeout;
-            this.restrict = 'E';
-            this.templateUrl = '../app/directives/lineChart/lineChart.html';
-            this.replace = true;
-            this.scope = {
-                data: '='
-            };
-            // you can set $scope to implement certain interface that extends angular.IScope, 
-            // but then you will tie the directive to one data set and it will not be
-            // reusable, therefore use 'any' instead
-            this.link = function ($scope, el, attrs) {
-                var elWidth, elHeight, data = $scope.data;
-                if ($scope.data) {
-                    convertDates();
-                    drawChart();
-                }
-                //resize the chart on browser resize
-                $scope.$watch(function () {
-                    elWidth = el.context.clientWidth;
-                    elHeight = el.context.clientHeight;
-                    return elWidth * elHeight;
-                }, function () {
-                    removeChart();
-                    drawChart(elWidth);
-                });
-                function removeChart() {
-                    d3.select('.line-chart svg').remove();
-                }
-                function convertDates() {
-                    data = data.map(function (d) {
-                        var formatDate = d3.time.format("%d-%b-%Y");
-                        d.date = formatDate.parse(d.date);
-                        return d;
-                    });
-                }
-                function drawChart(w) {
-                    if (w === void 0) { w = 960; }
-                    var margin = { top: 50, right: 50, bottom: 50, left: 100 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
-                    var x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
-                    var line = d3.svg.line()
-                        .x(function (d) { return x(d.date); })
-                        .y(function (d) { return y(d.users); });
-                    var svg = d3.select(".line-chart").append("svg")
-                        .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
-                        .append("g")
-                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                    x.domain(d3.extent(data, function (d) { return d.date; }));
-                    y.domain(d3.extent(data, function (d) { return d.users; }));
-                    svg.append("g")
-                        .attr("class", "x axis")
-                        .attr("transform", "translate(0," + height + ")")
-                        .call(xAxis);
-                    svg.append("g")
-                        .attr("class", "y axis")
-                        .call(yAxis)
-                        .append("text")
-                        .attr("transform", "rotate(-90)")
-                        .attr("y", 16)
-                        .style("text-anchor", "end")
-                        .text("Users");
-                    svg.append("path")
-                        .datum(data)
-                        .attr("class", "line")
-                        .attr("d", line);
-                }
-            };
-        }
-        LineChart.factory = function () {
-            var directive = function ($timeout) {
-                return new LineChart($timeout);
-            };
-            directive.$inject = ['$timeout'];
-            return directive;
-        };
-        return LineChart;
-    })();
-    AnalyticsDirectives.LineChart = LineChart;
-    angular.module('analyticsApp').directive('lineChart', LineChart.factory());
-})(AnalyticsDirectives || (AnalyticsDirectives = {}));
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/coloursService.ts" />
 'use strict';
 var AnalyticsDirectives;
@@ -637,30 +637,34 @@ var AnalyticsDirectives;
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
                 var elWidth, elHeight, data = $scope.data, that = _this;
-                console.log('class name: ', $scope.className);
+                //console.log('class name: ', $scope.className);
                 if (data) {
-                    _this.$timeout(drawChart, 2000); //working    
+                    _this.$timeout(drawChart, 1000); //working    
                 }
+                //console.log('el.context.clientWidth: ', el.context.clientWidth, ' el.context.clientHeight: ', el.context.clientHeight);
                 //resize chart on browser resize
                 $scope.$watch(function () {
                     elWidth = el.context.clientWidth;
-                    elHeight - el.context.clientHeight;
+                    elHeight = el.context.clientHeight;
+                    //console.log('elWidth * elHeight: ', elWidth * elHeight);
                     return elWidth * elHeight;
                 }, function () {
                     removeChart();
                     drawChart(elWidth);
                 });
                 function removeChart() {
-                    d3.select('.pie-chart svg').remove();
+                    //d3.select('.pie-chart svg').remove();
+                    //console.log('removing');
+                    d3.select('.' + $scope.className + ' svg').remove();
                 }
                 function drawChart(w) {
                     if (w === void 0) { w = 460; }
-                    console.log('drawing');
+                    //console.log('drawing');
                     var width = w, height = w, radius = Math.min(width, height) / 2;
                     var colourValues = d3.scale.ordinal().range(d3.values(that.ColoursService.colours));
                     var arc = d3.svg.arc()
                         .outerRadius(radius - 10)
-                        .innerRadius(radius - 70); //230
+                        .innerRadius(radius - 50); //70 230
                     var pie = d3.layout.pie()
                         .sort(null)
                         .value(function (d) { return d.quantity; });

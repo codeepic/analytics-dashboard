@@ -25,28 +25,33 @@ module AnalyticsDirectives{
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
             var elWidth: number, elHeight: number, data = $scope.data, that = this;
             
-            console.log('class name: ', $scope.className);
+            //console.log('class name: ', $scope.className);
             
             if(data){
-                this.$timeout(drawChart, 2000); //working    
+                this.$timeout(drawChart, 1000); //working    
             }
+            
+            //console.log('el.context.clientWidth: ', el.context.clientWidth, ' el.context.clientHeight: ', el.context.clientHeight);
             
             //resize chart on browser resize
             $scope.$watch(() => {
                 elWidth = el.context.clientWidth;
-                elHeight - el.context.clientHeight;
+                elHeight = el.context.clientHeight;
+                //console.log('elWidth * elHeight: ', elWidth * elHeight);
                 return elWidth * elHeight;
             }, () => {
                 removeChart();
                 drawChart(elWidth);
-            })
+            });
             
             function removeChart(){
-                d3.select('.pie-chart svg').remove();
+                //d3.select('.pie-chart svg').remove();
+                //console.log('removing');
+                d3.select('.' + $scope.className + ' svg').remove();
             }
             
             function drawChart(w: number = 460){
-                console.log('drawing');
+                //console.log('drawing');
                 var width = w,
                     height = w,
                     radius = Math.min(width, height) / 2;
@@ -55,7 +60,7 @@ module AnalyticsDirectives{
                 
                 var arc = d3.svg.arc()
                     .outerRadius(radius - 10)
-                    .innerRadius(radius - 70); //230
+                    .innerRadius(radius - 50); //70 230
                     
                 var pie = d3.layout.pie()
                     .sort(null)
