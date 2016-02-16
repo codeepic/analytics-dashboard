@@ -327,73 +327,6 @@ var AnalyticsServices;
     angular.module('analyticsApp').service('VendorsService', VendorsService);
 })(AnalyticsServices || (AnalyticsServices = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../services/usersService.ts" />
-/// <reference path="../../services/codesService.ts" />
-/// <reference path="../../services/offersService.ts" />
-/// <reference path="../../services/vendorsService.ts" />
-var AnalyticsControllers;
-(function (AnalyticsControllers) {
-    var OverviewController = (function () {
-        function OverviewController($window, $scope, UsersService, CodesService, OffersService, VendorsService) {
-            this.$window = $window;
-            this.$scope = $scope;
-            this.UsersService = UsersService;
-            this.CodesService = CodesService;
-            this.OffersService = OffersService;
-            this.VendorsService = VendorsService;
-            this.GetUsersData();
-            this.GetCodeDeliveriesData();
-            this.GetOffersByCategoryData();
-            this.GetVendorsByCategoryData();
-            //data="vm.codeDeliveriesData"
-            //needed to make the chart directives responsive
-            angular.element($window).on('resize', function () {
-                $scope.$apply();
-            });
-        }
-        OverviewController.prototype.GetUsersData = function () {
-            var _this = this;
-            this.UsersService.GetUsers()
-                .then(function (usersData) {
-                _this.usersData = usersData;
-            }, function (error) {
-                console.log('there was an error fetching users');
-            });
-        };
-        OverviewController.prototype.GetCodeDeliveriesData = function () {
-            var _this = this;
-            this.CodesService.GetCodeDeliveries()
-                .then(function (codeDeliveriesData) {
-                _this.codeDeliveriesData = codeDeliveriesData;
-            }, function (error) {
-                console.log('there was an error fetching code deliveries');
-            });
-        };
-        OverviewController.prototype.GetOffersByCategoryData = function () {
-            var _this = this;
-            this.OffersService.GetOffersByCategory()
-                .then(function (offersByCategoryData) {
-                _this.offersByCategoryData = offersByCategoryData;
-            }, function (error) {
-                console.log('there was an error fetching offers by category data');
-            });
-        };
-        OverviewController.prototype.GetVendorsByCategoryData = function () {
-            var _this = this;
-            this.VendorsService.GetVendorsByCategory()
-                .then(function (vendorsByCategoryData) {
-                _this.vendorsByCategoryData = vendorsByCategoryData;
-            }, function (error) {
-                console.log('there was an error fetching vendors by category data');
-            });
-        };
-        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
-        return OverviewController;
-    })();
-    AnalyticsControllers.OverviewController = OverviewController;
-    angular.module('analyticsApp').controller('OverviewController', OverviewController);
-})(AnalyticsControllers || (AnalyticsControllers = {}));
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/usersService.ts" />
 'use strict';
@@ -628,8 +561,9 @@ var AnalyticsDirectives;
             this.transclude = true;
             this.templateUrl = '../app/directives/pieChart/pieChart.html';
             this.scope = {
+                chartHeading: '@',
                 chartName: '@',
-                className: '@',
+                chartNameColour: '@',
                 data: '='
             };
             // you can set $scope to implement certain interface that extends angular.IScope, 
@@ -676,6 +610,29 @@ var AnalyticsDirectives;
                         .attr('fill', function (d) {
                         return colourValues(d.data.category);
                     });
+                    //arc numbers                    
+                    g.append('text')
+                        .attr('transform', function (d) { return 'translate(' + arc.centroid(d) + ')'; })
+                        .attr('dy', '0.5em')
+                        .text(function (d) { return d.data.quantity; });
+                    var quantitySumText = d3.sum(data, function (d) { return d.quantity; });
+                    // svg.append('text')
+                    //     .attr('transform', 'translate(' + width/2 + ',' + height/2 + ')')
+                    //     .attr('transform', 'translate(-100, 0)')
+                    //     .attr('font-size', '44')
+                    //     .attr('fill', '#999999')
+                    //     .text(total + '' + $scope.chartName.toUpperCase());
+                    var text = svg.append('text')
+                        .attr('font-size', '40')
+                        .attr('fill', $scope.chartNameColour);
+                    text.append('tspan')
+                        .attr('x', '-7%')
+                        .attr('dy', '0')
+                        .text(quantitySumText);
+                    text.append('tspan')
+                        .attr('x', '-20%')
+                        .attr('dy', '40')
+                        .text($scope.chartName.toUpperCase());
                 }
             };
         }
@@ -691,3 +648,70 @@ var AnalyticsDirectives;
     AnalyticsDirectives.PieChart = PieChart;
     angular.module('analyticsApp').directive('pieChart', PieChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../services/usersService.ts" />
+/// <reference path="../../services/codesService.ts" />
+/// <reference path="../../services/offersService.ts" />
+/// <reference path="../../services/vendorsService.ts" />
+var AnalyticsControllers;
+(function (AnalyticsControllers) {
+    var OverviewController = (function () {
+        function OverviewController($window, $scope, UsersService, CodesService, OffersService, VendorsService) {
+            this.$window = $window;
+            this.$scope = $scope;
+            this.UsersService = UsersService;
+            this.CodesService = CodesService;
+            this.OffersService = OffersService;
+            this.VendorsService = VendorsService;
+            this.GetUsersData();
+            this.GetCodeDeliveriesData();
+            this.GetOffersByCategoryData();
+            this.GetVendorsByCategoryData();
+            //data="vm.codeDeliveriesData"
+            //needed to make the chart directives responsive
+            angular.element($window).on('resize', function () {
+                $scope.$apply();
+            });
+        }
+        OverviewController.prototype.GetUsersData = function () {
+            var _this = this;
+            this.UsersService.GetUsers()
+                .then(function (usersData) {
+                _this.usersData = usersData;
+            }, function (error) {
+                console.log('there was an error fetching users');
+            });
+        };
+        OverviewController.prototype.GetCodeDeliveriesData = function () {
+            var _this = this;
+            this.CodesService.GetCodeDeliveries()
+                .then(function (codeDeliveriesData) {
+                _this.codeDeliveriesData = codeDeliveriesData;
+            }, function (error) {
+                console.log('there was an error fetching code deliveries');
+            });
+        };
+        OverviewController.prototype.GetOffersByCategoryData = function () {
+            var _this = this;
+            this.OffersService.GetOffersByCategory()
+                .then(function (offersByCategoryData) {
+                _this.offersByCategoryData = offersByCategoryData;
+            }, function (error) {
+                console.log('there was an error fetching offers by category data');
+            });
+        };
+        OverviewController.prototype.GetVendorsByCategoryData = function () {
+            var _this = this;
+            this.VendorsService.GetVendorsByCategory()
+                .then(function (vendorsByCategoryData) {
+                _this.vendorsByCategoryData = vendorsByCategoryData;
+            }, function (error) {
+                console.log('there was an error fetching vendors by category data');
+            });
+        };
+        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
+        return OverviewController;
+    })();
+    AnalyticsControllers.OverviewController = OverviewController;
+    angular.module('analyticsApp').controller('OverviewController', OverviewController);
+})(AnalyticsControllers || (AnalyticsControllers = {}));

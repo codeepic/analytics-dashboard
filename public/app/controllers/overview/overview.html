@@ -1,8 +1,11 @@
 <h2>Analytics Overview</h2>
 
 <div>
-	<pie-chart class="left" id="offers-pie-chart" chart-name="Offers by Category" data="vm.offersByCategoryData"></pie-chart>
-	<pie-chart class="right" id="vendors-pie-chart" chart-name="Vendors by Category" data="vm.vendorsByCategoryData"></pie-chart>
+	<!--<pie-chart class="left" id="offers-pie-chart" chart-name="Offers by Category" data="vm.offersByCategoryData"></pie-chart>
+	<pie-chart class="right" id="vendors-pie-chart" chart-name="Vendors by Category" data="vm.vendorsByCategoryData"></pie-chart>-->
+    <!-- instead of sending so many values, send one object in.-->
+    <pie-chart class="left" id="offers-pie-chart" chart-heading="Offers by Category" chart-name="Live Offers" chart-name-colour="#8089c2" data="vm.offersByCategoryData"></pie-chart>
+	<pie-chart class="right" id="vendors-pie-chart" chart-heading="Vendors by Category" chart-name="Vendors" chart-name-colour="#89c541" data="vm.vendorsByCategoryData"></pie-chart>
 	<span class="clear"></span>
 </div>
 
