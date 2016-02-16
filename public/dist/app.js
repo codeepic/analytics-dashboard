@@ -327,6 +327,73 @@ var AnalyticsServices;
     angular.module('analyticsApp').service('VendorsService', VendorsService);
 })(AnalyticsServices || (AnalyticsServices = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../services/usersService.ts" />
+/// <reference path="../../services/codesService.ts" />
+/// <reference path="../../services/offersService.ts" />
+/// <reference path="../../services/vendorsService.ts" />
+var AnalyticsControllers;
+(function (AnalyticsControllers) {
+    var OverviewController = (function () {
+        function OverviewController($window, $scope, UsersService, CodesService, OffersService, VendorsService) {
+            this.$window = $window;
+            this.$scope = $scope;
+            this.UsersService = UsersService;
+            this.CodesService = CodesService;
+            this.OffersService = OffersService;
+            this.VendorsService = VendorsService;
+            this.GetUsersData();
+            this.GetCodeDeliveriesData();
+            this.GetOffersByCategoryData();
+            this.GetVendorsByCategoryData();
+            //data="vm.codeDeliveriesData"
+            //needed to make the chart directives responsive
+            angular.element($window).on('resize', function () {
+                $scope.$apply();
+            });
+        }
+        OverviewController.prototype.GetUsersData = function () {
+            var _this = this;
+            this.UsersService.GetUsers()
+                .then(function (usersData) {
+                _this.usersData = usersData;
+            }, function (error) {
+                console.log('there was an error fetching users');
+            });
+        };
+        OverviewController.prototype.GetCodeDeliveriesData = function () {
+            var _this = this;
+            this.CodesService.GetCodeDeliveries()
+                .then(function (codeDeliveriesData) {
+                _this.codeDeliveriesData = codeDeliveriesData;
+            }, function (error) {
+                console.log('there was an error fetching code deliveries');
+            });
+        };
+        OverviewController.prototype.GetOffersByCategoryData = function () {
+            var _this = this;
+            this.OffersService.GetOffersByCategory()
+                .then(function (offersByCategoryData) {
+                _this.offersByCategoryData = offersByCategoryData;
+            }, function (error) {
+                console.log('there was an error fetching offers by category data');
+            });
+        };
+        OverviewController.prototype.GetVendorsByCategoryData = function () {
+            var _this = this;
+            this.VendorsService.GetVendorsByCategory()
+                .then(function (vendorsByCategoryData) {
+                _this.vendorsByCategoryData = vendorsByCategoryData;
+            }, function (error) {
+                console.log('there was an error fetching vendors by category data');
+            });
+        };
+        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
+        return OverviewController;
+    })();
+    AnalyticsControllers.OverviewController = OverviewController;
+    angular.module('analyticsApp').controller('OverviewController', OverviewController);
+})(AnalyticsControllers || (AnalyticsControllers = {}));
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/usersService.ts" />
 'use strict';
@@ -588,7 +655,8 @@ var AnalyticsDirectives;
                 }
                 function drawChart(w) {
                     if (w === void 0) { w = 460; }
-                    var width = w, height = w, radius = Math.min(width, height) / 2;
+                    var width = w, height = w * 2, //was w
+                    radius = Math.min(width, height) / 2;
                     var colourValues = d3.scale.ordinal().range(d3.values(that.ColoursService.colours));
                     var arc = d3.svg.arc()
                         .outerRadius(radius - 10)
@@ -624,6 +692,7 @@ var AnalyticsDirectives;
                     //     .text(total + '' + $scope.chartName.toUpperCase());
                     var text = svg.append('text')
                         .attr('font-size', '40')
+                        .attr('font-weight', 'bold')
                         .attr('fill', $scope.chartNameColour);
                     text.append('tspan')
                         .attr('x', '-7%')
@@ -633,6 +702,86 @@ var AnalyticsDirectives;
                         .attr('x', '-20%')
                         .attr('dy', '40')
                         .text($scope.chartName.toUpperCase());
+                    //http://zeroviscosity.com/d3-js-step-by-step/step-3-adding-a-legend
+                    // var legend = svg.append('g')
+                    //     .attr('class', 'legend')
+                    //     .attr('tranform', 'translate(50, 30)')
+                    //     .style('font-size', '12px')
+                    //     .call(d3.legend);
+                    //todo: get all this crap into one neat function using loop
+                    var yPos = 330;
+                    var legend1 = svg.append('g')
+                        .attr('class', 'legend')
+                        .attr('transform', 'translate(-230, ' + yPos + ')') //was 50,30 //now its out of chart area
+                        .attr('height', '50')
+                        .attr('width', '50');
+                    legend1.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(57, 59, 121)');
+                    //.style('stroke', 'rgb(57, 59, 121)');
+                    legend1.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('kakakak');
+                    var legend2 = svg.append('g')
+                        .attr('class', 'legend')
+                        .attr('transform', 'translate(-230, ' + (yPos + 30) + ')') //30 + 20 rect height + 10 padding
+                        .attr('height', '50')
+                        .attr('width', '50');
+                    legend2.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(23, 159, 221)');
+                    //.style('stroke', 'rgb(57, 59, 121)');
+                    legend2.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('omomom');
+                    var legend3 = svg.append('g')
+                        .attr('class', 'legend')
+                        .attr('transform', 'translate(-230, ' + (yPos + 60) + ')') //30 + 20 rect height + 10 padding
+                        .attr('height', '50')
+                        .attr('width', '50');
+                    legend3.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(123, 239, 121)');
+                    //.style('stroke', 'rgb(57, 59, 121)');
+                    legend3.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('karramba');
+                    //right column
+                    var xPosRight = 30;
+                    var legend1 = svg.append('g')
+                        .attr('class', 'legend')
+                        .attr('transform', 'translate(' + xPosRight + ', ' + yPos + ')') //was 50,30 //now its out of chart area
+                        .attr('height', '50')
+                        .attr('width', '50');
+                    legend1.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(90, 78, 221)');
+                    //.style('stroke', 'rgb(57, 59, 121)');
+                    legend1.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('nahfs');
+                    var legend2 = svg.append('g')
+                        .attr('class', 'legend')
+                        .attr('transform', 'translate(' + xPosRight + ', ' + (yPos + 30) + ')') //30 + 20 rect height + 10 padding
+                        .attr('height', '50')
+                        .attr('width', '50');
+                    legend2.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(223, 23, 121)');
+                    //.style('stroke', 'rgb(57, 59, 121)');
+                    legend2.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('rukusj');
                 }
             };
         }
@@ -648,70 +797,21 @@ var AnalyticsDirectives;
     AnalyticsDirectives.PieChart = PieChart;
     angular.module('analyticsApp').directive('pieChart', PieChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../services/usersService.ts" />
-/// <reference path="../../services/codesService.ts" />
-/// <reference path="../../services/offersService.ts" />
-/// <reference path="../../services/vendorsService.ts" />
-var AnalyticsControllers;
-(function (AnalyticsControllers) {
-    var OverviewController = (function () {
-        function OverviewController($window, $scope, UsersService, CodesService, OffersService, VendorsService) {
-            this.$window = $window;
-            this.$scope = $scope;
-            this.UsersService = UsersService;
-            this.CodesService = CodesService;
-            this.OffersService = OffersService;
-            this.VendorsService = VendorsService;
-            this.GetUsersData();
-            this.GetCodeDeliveriesData();
-            this.GetOffersByCategoryData();
-            this.GetVendorsByCategoryData();
-            //data="vm.codeDeliveriesData"
-            //needed to make the chart directives responsive
-            angular.element($window).on('resize', function () {
-                $scope.$apply();
-            });
-        }
-        OverviewController.prototype.GetUsersData = function () {
-            var _this = this;
-            this.UsersService.GetUsers()
-                .then(function (usersData) {
-                _this.usersData = usersData;
-            }, function (error) {
-                console.log('there was an error fetching users');
-            });
-        };
-        OverviewController.prototype.GetCodeDeliveriesData = function () {
-            var _this = this;
-            this.CodesService.GetCodeDeliveries()
-                .then(function (codeDeliveriesData) {
-                _this.codeDeliveriesData = codeDeliveriesData;
-            }, function (error) {
-                console.log('there was an error fetching code deliveries');
-            });
-        };
-        OverviewController.prototype.GetOffersByCategoryData = function () {
-            var _this = this;
-            this.OffersService.GetOffersByCategory()
-                .then(function (offersByCategoryData) {
-                _this.offersByCategoryData = offersByCategoryData;
-            }, function (error) {
-                console.log('there was an error fetching offers by category data');
-            });
-        };
-        OverviewController.prototype.GetVendorsByCategoryData = function () {
-            var _this = this;
-            this.VendorsService.GetVendorsByCategory()
-                .then(function (vendorsByCategoryData) {
-                _this.vendorsByCategoryData = vendorsByCategoryData;
-            }, function (error) {
-                console.log('there was an error fetching vendors by category data');
-            });
-        };
-        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
-        return OverviewController;
-    })();
-    AnalyticsControllers.OverviewController = OverviewController;
-    angular.module('analyticsApp').controller('OverviewController', OverviewController);
-})(AnalyticsControllers || (AnalyticsControllers = {}));
+/*
+<g class="legend" transform="translate(-36,-44)">
+  <rect width="18" height="18" style="fill: rgb(57, 59, 121); stroke: rgb(57, 59, 121);"></rect>
+  <text x="22" y="14">Abulia</text>
+</g>
+<g class="legend" transform="translate(-36,-22)">
+  <rect width="18" height="18" style="fill: rgb(82, 84, 163); stroke: rgb(82, 84, 163);"></rect>
+  <text x="22" y="14">Betelgeuse</text>
+</g>
+<g class="legend" transform="translate(-36,0)">
+  <rect width="18" height="18" style="fill: rgb(107, 110, 207); stroke: rgb(107, 110, 207);"></rect>
+  <text x="22" y="14">Cantaloupe</text>
+</g>
+<g class="legend" transform="translate(-36,22)">
+  <rect width="18" height="18" style="fill: rgb(156, 158, 222); stroke: rgb(156, 158, 222);"></rect>
+  <text x="22" y="14">Dijkstra</text>
+</g>
+ */ 

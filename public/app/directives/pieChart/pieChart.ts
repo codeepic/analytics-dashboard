@@ -42,7 +42,7 @@ module AnalyticsDirectives{
                 
                 function drawChart(w: number = 460){
                     var width = w,
-                        height = w,
+                        height = w * 2, //was w
                         radius = Math.min(width, height) / 2;
                     
                     var colourValues = d3.scale.ordinal().range(d3.values(that.ColoursService.colours));
@@ -89,6 +89,7 @@ module AnalyticsDirectives{
                 
                 var text = svg.append('text')
                     .attr('font-size', '40')
+                    .attr('font-weight', 'bold')
                     .attr('fill', $scope.chartNameColour);
                 
                 text.append('tspan')
@@ -100,6 +101,104 @@ module AnalyticsDirectives{
                     .attr('x', '-20%')
                     .attr('dy','40')
                     .text($scope.chartName.toUpperCase());
+                    
+                //http://zeroviscosity.com/d3-js-step-by-step/step-3-adding-a-legend
+                // var legend = svg.append('g')
+                //     .attr('class', 'legend')
+                //     .attr('tranform', 'translate(50, 30)')
+                //     .style('font-size', '12px')
+                //     .call(d3.legend);
+                
+                //todo: get all this crap into one neat function using loop
+                var yPos = 330;
+                var legend1 = svg.append('g')
+                    .attr('class', 'legend')
+                    .attr('transform', 'translate(-230, ' + yPos + ')') //was 50,30 //now its out of chart area
+                    .attr('height', '50')
+                    .attr('width', '50');
+                    
+                    legend1.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(57, 59, 121)');
+                        //.style('stroke', 'rgb(57, 59, 121)');
+                        
+                    legend1.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('kakakak');
+                        
+                var legend2 = svg.append('g')
+                    .attr('class', 'legend')
+                    .attr('transform', 'translate(-230, '+ (yPos + 30) + ')') //30 + 20 rect height + 10 padding
+                    .attr('height', '50')
+                    .attr('width', '50');
+                    
+                    legend2.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(23, 159, 221)');
+                        //.style('stroke', 'rgb(57, 59, 121)');
+                        
+                    legend2.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('omomom');
+                        
+                var legend3 = svg.append('g')
+                    .attr('class', 'legend')
+                    .attr('transform', 'translate(-230, '+ (yPos + 60) + ')') //30 + 20 rect height + 10 padding
+                    .attr('height', '50')
+                    .attr('width', '50');
+                    
+                    legend3.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(123, 239, 121)');
+                        //.style('stroke', 'rgb(57, 59, 121)');
+                        
+                    legend3.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('karramba');
+                        
+                        //right column
+                var xPosRight = 30
+                var legend1 = svg.append('g')
+                    .attr('class', 'legend')
+                    .attr('transform', 'translate(' + xPosRight + ', ' + yPos + ')') //was 50,30 //now its out of chart area
+                    .attr('height', '50')
+                    .attr('width', '50');
+                    
+                    legend1.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(90, 78, 221)');
+                        //.style('stroke', 'rgb(57, 59, 121)');
+                        
+                    legend1.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('nahfs');
+                        
+                var legend2 = svg.append('g')
+                    .attr('class', 'legend')
+                    .attr('transform', 'translate(' + xPosRight + ', ' + (yPos + 30) + ')') //30 + 20 rect height + 10 padding
+                    .attr('height', '50')
+                    .attr('width', '50');
+                    
+                    legend2.append('rect')
+                        .attr('width', '20')
+                        .attr('height', '20')
+                        .style('fill', 'rgb(223, 23, 121)');
+                        //.style('stroke', 'rgb(57, 59, 121)');
+                        
+                    legend2.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text('rukusj');
+                        
+                    
             }
 		};
 
@@ -116,3 +215,21 @@ module AnalyticsDirectives{
 	angular.module('analyticsApp').directive('pieChart', PieChart.factory());
 }
 
+/*
+<g class="legend" transform="translate(-36,-44)">
+  <rect width="18" height="18" style="fill: rgb(57, 59, 121); stroke: rgb(57, 59, 121);"></rect>
+  <text x="22" y="14">Abulia</text>
+</g>
+<g class="legend" transform="translate(-36,-22)">
+  <rect width="18" height="18" style="fill: rgb(82, 84, 163); stroke: rgb(82, 84, 163);"></rect>
+  <text x="22" y="14">Betelgeuse</text>
+</g>
+<g class="legend" transform="translate(-36,0)">
+  <rect width="18" height="18" style="fill: rgb(107, 110, 207); stroke: rgb(107, 110, 207);"></rect>
+  <text x="22" y="14">Cantaloupe</text>
+</g>
+<g class="legend" transform="translate(-36,22)">
+  <rect width="18" height="18" style="fill: rgb(156, 158, 222); stroke: rgb(156, 158, 222);"></rect>
+  <text x="22" y="14">Dijkstra</text>
+</g>
+ */

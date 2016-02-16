@@ -4,4 +4,5 @@
 .right{float:right}.left{float:left}.overflow-hidden{overflow:hidden}.full-parent-height-bg{margin-bottom:-500em;padding-bottom:500em}.line-chart .axis line,.line-chart .axis path{fill:none;stroke:#000;shape-rendering:crispEdges}.line-chart .line{fill:none;stroke:#86cc1c;stroke-width:4px}
 .right{float:right}.left,.main-nav{float:left}.overflow-hidden{overflow:hidden}.full-parent-height-bg{margin-bottom:-500em;padding-bottom:500em}.main-nav{width:18%;background-color:#8d9297}.main-nav ul li a{display:block;padding:20px;background-color:#8d9297}.main-nav ul li a.active,.main-nav ul li a:active,.main-nav ul li a:hover{background-color:#747a7f}
 .multi-line-chart .axis line,.multi-line-chart .axis path{fill:none;stroke:#000;shape-rendering:crispEdges}.multi-line-chart .line{fill:none;stroke:#4682b4;stroke-width:3.5px}
+
 .right{float:right}.left{float:left}.overflow-hidden{overflow:hidden}.full-parent-height-bg{margin-bottom:-500em;padding-bottom:500em}.template-container{float:right;width:82%;padding:20px}.line-chart,.multi-line-chart,.pie-chart{font-size:.75em;border:1px solid #ccc;min-height:250px;margin-top:20px}.pie-chart{width:48%}
