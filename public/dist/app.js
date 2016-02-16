@@ -620,12 +620,12 @@ var AnalyticsDirectives;
 var AnalyticsDirectives;
 (function (AnalyticsDirectives) {
     var PieChart = (function () {
-        function PieChart(ColoursService, $timeout) {
+        function PieChart(ColoursService) {
             var _this = this;
             this.ColoursService = ColoursService;
-            this.$timeout = $timeout;
             this.restrict = 'E';
             this.replace = true;
+            this.transclude = true;
             this.templateUrl = '../app/directives/pieChart/pieChart.html';
             this.scope = {
                 chartName: '@',
@@ -637,29 +637,23 @@ var AnalyticsDirectives;
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
                 var elWidth, elHeight, data = $scope.data, that = _this;
-                //console.log('class name: ', $scope.className);
                 if (data) {
-                    _this.$timeout(drawChart, 1000); //working    
+                    drawChart();
                 }
-                //console.log('el.context.clientWidth: ', el.context.clientWidth, ' el.context.clientHeight: ', el.context.clientHeight);
                 //resize chart on browser resize
                 $scope.$watch(function () {
                     elWidth = el.context.clientWidth;
                     elHeight = el.context.clientHeight;
-                    //console.log('elWidth * elHeight: ', elWidth * elHeight);
                     return elWidth * elHeight;
                 }, function () {
                     removeChart();
                     drawChart(elWidth);
                 });
                 function removeChart() {
-                    //d3.select('.pie-chart svg').remove();
-                    //console.log('removing');
-                    d3.select('.' + $scope.className + ' svg').remove();
+                    d3.select('#' + el.context.id + ' svg').remove();
                 }
                 function drawChart(w) {
                     if (w === void 0) { w = 460; }
-                    //console.log('drawing');
                     var width = w, height = w, radius = Math.min(width, height) / 2;
                     var colourValues = d3.scale.ordinal().range(d3.values(that.ColoursService.colours));
                     var arc = d3.svg.arc()
@@ -668,8 +662,7 @@ var AnalyticsDirectives;
                     var pie = d3.layout.pie()
                         .sort(null)
                         .value(function (d) { return d.quantity; });
-                    //var svg = d3.select('.pie-chart').append('svg')
-                    var svg = d3.select('.' + $scope.className).append('svg')
+                    var svg = d3.select('#' + el.context.id).append('svg')
                         .attr('width', width)
                         .attr('height', height)
                         .append('g')
@@ -685,13 +678,12 @@ var AnalyticsDirectives;
                     });
                 }
             };
-            //console.log('className: ', $scope.);
         }
         PieChart.factory = function () {
-            var directive = function (ColoursService, $timeout) {
-                return new PieChart(ColoursService, $timeout);
+            var directive = function (ColoursService) {
+                return new PieChart(ColoursService);
             };
-            directive.$inject = ['ColoursService', '$timeout'];
+            directive.$inject = ['ColoursService'];
             return directive;
         };
         return PieChart;

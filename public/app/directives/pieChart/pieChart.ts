@@ -7,6 +7,7 @@ module AnalyticsDirectives{
 	export class PieChart implements angular.IDirective {
 		restrict: string = 'E';
 		replace: boolean = true;
+        transclude: boolean = true;
 		templateUrl: string = '../app/directives/pieChart/pieChart.html';
         scope = {
             chartName: '@',
@@ -14,10 +15,7 @@ module AnalyticsDirectives{
             data: '='    
         };
         
-		constructor(private ColoursService: AnalyticsServices.ColoursService,
-        private $timeout: angular.ITimeoutService){
-            //console.log('className: ', $scope.);
-        }
+		constructor(private ColoursService: AnalyticsServices.ColoursService){}
 
         // you can set $scope to implement certain interface that extends angular.IScope, 
 		// but then you will tie the directive to one data set and it will not be
@@ -25,19 +23,12 @@ module AnalyticsDirectives{
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
             var elWidth: number, elHeight: number, data = $scope.data, that = this;
             
-            //console.log('class name: ', $scope.className);
-            
-            if(data){
-                this.$timeout(drawChart, 1000); //working    
-            }
-            
-            //console.log('el.context.clientWidth: ', el.context.clientWidth, ' el.context.clientHeight: ', el.context.clientHeight);
+            if(data){ drawChart(); }
             
             //resize chart on browser resize
             $scope.$watch(() => {
                 elWidth = el.context.clientWidth;
                 elHeight = el.context.clientHeight;
-                //console.log('elWidth * elHeight: ', elWidth * elHeight);
                 return elWidth * elHeight;
             }, () => {
                 removeChart();
@@ -45,13 +36,10 @@ module AnalyticsDirectives{
             });
             
             function removeChart(){
-                //d3.select('.pie-chart svg').remove();
-                //console.log('removing');
-                d3.select('.' + $scope.className + ' svg').remove();
+                d3.select('#' + el.context.id + ' svg').remove();
             }
             
             function drawChart(w: number = 460){
-                //console.log('drawing');
                 var width = w,
                     height = w,
                     radius = Math.min(width, height) / 2;
@@ -66,8 +54,7 @@ module AnalyticsDirectives{
                     .sort(null)
                     .value(function(d: any) {return d.quantity});
                         
-                //var svg = d3.select('.pie-chart').append('svg')
-                var svg = d3.select('.' + $scope.className).append('svg')
+                var svg = d3.select('#'+ el.context.id).append('svg')
                     .attr('width', width)
                     .attr('height', height)
                     .append('g')
@@ -88,11 +75,11 @@ module AnalyticsDirectives{
 		};
 
 		static factory(): angular.IDirectiveFactory {
-			var directive: angular.IDirectiveFactory = (ColoursService, $timeout) => {
-					return new PieChart(ColoursService, $timeout);
+			var directive: angular.IDirectiveFactory = (ColoursService) => {
+					return new PieChart(ColoursService);
 			}
 
-			directive.$inject = ['ColoursService', '$timeout'];
+			directive.$inject = ['ColoursService'];
 			return directive;
 		}
 	}

@@ -1,19 +1,12 @@
 <h2>Analytics Overview</h2>
 
 <div>
-	<pie-chart class="left" id="offers-pie-chart" chart-name="Offers by Category" class-name="offers-pie-chart" data="vm.offersByCategoryData"></pie-chart>
-	<pie-chart class="right" id="vendors-pie-chart" chart-name="Vendors by Category" class-name="vendors-pie-chart" data="vm.vendorsByCategoryData"></pie-chart>
+	<pie-chart class="left" id="offers-pie-chart" chart-name="Offers by Category" data="vm.offersByCategoryData"></pie-chart>
+	<pie-chart class="right" id="vendors-pie-chart" chart-name="Vendors by Category" data="vm.vendorsByCategoryData"></pie-chart>
 	<span class="clear"></span>
 </div>
-
-<!-- move it down again, keep it here just for ease of debuggin-->
 
 <multi-line-chart data="vm.codeDeliveriesData"></multi-line-chart> 
 
 <line-chart data='vm.usersData'></line-chart>
 	
-
-<!--
-<h3>Multi Line Chart</h3>
-<multi-line-chart data="vm.codeDeliveriesData"></multi-line-chart>
--->
