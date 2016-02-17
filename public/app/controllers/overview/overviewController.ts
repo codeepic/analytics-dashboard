@@ -13,7 +13,7 @@ module AnalyticsControllers {
         private codeDeliveriesData: any; //todo: add interface
         private offersByCategoryData: Array<IByCategoryData>; //todo: add interfaces
         private vendorsByCategoryData: Array<IByCategoryData>; //todo: add interfaces
-        
+        private deregistrationsByAgeData: any; //Array<> //todo: add interfaces
 		constructor(
             private $window: angular.IWindowService,
             private $scope: angular.IScope,
@@ -26,6 +26,7 @@ module AnalyticsControllers {
             this.GetCodeDeliveriesData();
             this.GetOffersByCategoryData();
             this.GetVendorsByCategoryData();
+            this.GetDeregistrationsByAgeData();
             //data="vm.codeDeliveriesData"
             
             //needed to make the chart directives responsive
@@ -34,7 +35,7 @@ module AnalyticsControllers {
             });
 		}
 
-		private GetUsersData() {
+		private GetUsersData(): void {
 			this.UsersService.GetUsers()
 				.then((usersData: Array<IUserData>) =>{
 					this.usersData = usersData;
@@ -43,7 +44,7 @@ module AnalyticsControllers {
 				});
 		}
         
-        private GetCodeDeliveriesData() {
+        private GetCodeDeliveriesData(): void {
 			this.CodesService.GetCodeDeliveries()
 				.then((codeDeliveriesData: any) =>{ //todo: add interface
 					this.codeDeliveriesData = codeDeliveriesData;
@@ -52,7 +53,7 @@ module AnalyticsControllers {
 				});
 		}
         
-        private GetOffersByCategoryData() {
+        private GetOffersByCategoryData(): void {
             this.OffersService.GetOffersByCategory()
 				.then((offersByCategoryData: Array<IByCategoryData>) =>{
 					this.offersByCategoryData = offersByCategoryData;
@@ -61,13 +62,22 @@ module AnalyticsControllers {
 				});
         }
         
-        private GetVendorsByCategoryData() {
+        private GetVendorsByCategoryData(): void {
             this.VendorsService.GetVendorsByCategory()
 				.then((vendorsByCategoryData: Array<IByCategoryData>) =>{
 					this.vendorsByCategoryData = vendorsByCategoryData;
 				}, (error) => {
 					console.log('there was an error fetching vendors by category data');
 				});
+        }
+        
+        private GetDeregistrationsByAgeData(): void {
+            this.UsersService.GetDeregistrationsByAge()
+                .then((result: Array<IDeregistrationByAge>) => {
+                    this.deregistrationsByAgeData = result;
+                }, () => {
+                    console.log('there was an error fetching deregistrations by age data');
+                })
         }
 	}
 

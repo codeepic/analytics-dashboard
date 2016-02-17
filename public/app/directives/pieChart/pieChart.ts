@@ -7,7 +7,7 @@ module AnalyticsDirectives{
 	export class PieChart implements angular.IDirective {
 		restrict: string = 'E';
 		replace: boolean = true;
-        transclude: boolean = true;
+        transclude: boolean = true; //todo: check if needed and remove
 		templateUrl: string = '../app/directives/pieChart/pieChart.html';
         scope = {
             chartHeading: '@', 

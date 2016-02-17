@@ -100,6 +100,65 @@ module AnalyticsServices {
 
 			return q.promise;
 		}
+        
+        public GetDeregistrationsByAge(): angular.IPromise<Array<IDeregistrationByAge>> { //todo: add interface
+            var q = this.$q.defer();
+            
+            var data = [
+                {
+                    deregistrations: 55123,
+                    age: '18-23'
+                },
+                {
+                    deregistrations: 36514,
+                    age: '24-29'
+                },
+                {
+                    deregistrations: 13456,
+                    age: '30-35'
+                },
+                {
+                    deregistrations: 25903,
+                    age: '36-40'
+                },
+                {
+                    deregistrations: 72832,
+                    age: '41-45'
+                },
+                {
+                    deregistrations: 46322,
+                    age: '46-51'
+                },
+                {
+                    deregistrations: 25376,
+                    age: '52-57'
+                },
+                {
+                    deregistrations: 23742,
+                    age: '58-63'
+                },
+                {
+                    deregistrations: 28739,
+                    age: '64-69'
+                },
+                {
+                    deregistrations: 23830,
+                    age: '70-75'
+                },
+                {
+                    deregistrations: 1332,
+                    age: '76-81'
+                },
+                {
+                    deregistrations: 823,
+                    age: '82-87'
+                }
+            ];
+            
+            q.resolve(data);
+            
+            return q.promise
+        }
 	}
 
 	angular.module('analyticsApp').service('UsersService', UsersService);
@@ -109,4 +168,8 @@ interface IUserData{
 	date: string;
 	users: number;
 }
-//
+
+interface IDeregistrationByAge{
+    deregistrations: number;
+    age: string;
+}

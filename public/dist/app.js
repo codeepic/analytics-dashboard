@@ -276,13 +276,67 @@ var AnalyticsServices;
             q.resolve(usersData);
             return q.promise;
         };
+        UsersService.prototype.GetDeregistrationsByAge = function () {
+            var q = this.$q.defer();
+            var data = [
+                {
+                    deregistrations: 55123,
+                    age: '18-23'
+                },
+                {
+                    deregistrations: 36514,
+                    age: '24-29'
+                },
+                {
+                    deregistrations: 13456,
+                    age: '30-35'
+                },
+                {
+                    deregistrations: 25903,
+                    age: '36-40'
+                },
+                {
+                    deregistrations: 72832,
+                    age: '41-45'
+                },
+                {
+                    deregistrations: 46322,
+                    age: '46-51'
+                },
+                {
+                    deregistrations: 25376,
+                    age: '52-57'
+                },
+                {
+                    deregistrations: 23742,
+                    age: '58-63'
+                },
+                {
+                    deregistrations: 28739,
+                    age: '64-69'
+                },
+                {
+                    deregistrations: 23830,
+                    age: '70-75'
+                },
+                {
+                    deregistrations: 1332,
+                    age: '76-81'
+                },
+                {
+                    deregistrations: 823,
+                    age: '82-87'
+                }
+            ];
+            q.resolve(data);
+            return q.promise;
+        };
         UsersService.$inject = ['$q', '$http'];
         return UsersService;
     })();
     AnalyticsServices.UsersService = UsersService;
     angular.module('analyticsApp').service('UsersService', UsersService);
 })(AnalyticsServices || (AnalyticsServices = {}));
-// 
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="offersService.ts" />
 'use strict';
@@ -345,6 +399,7 @@ var AnalyticsControllers;
             this.GetCodeDeliveriesData();
             this.GetOffersByCategoryData();
             this.GetVendorsByCategoryData();
+            this.GetDeregistrationsByAgeData();
             //data="vm.codeDeliveriesData"
             //needed to make the chart directives responsive
             angular.element($window).on('resize', function () {
@@ -387,12 +442,55 @@ var AnalyticsControllers;
                 console.log('there was an error fetching vendors by category data');
             });
         };
+        OverviewController.prototype.GetDeregistrationsByAgeData = function () {
+            var _this = this;
+            this.UsersService.GetDeregistrationsByAge()
+                .then(function (result) {
+                _this.deregistrationsByAgeData = result;
+            }, function () {
+                console.log('there was an error fetching deregistrations by age data');
+            });
+        };
         OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
         return OverviewController;
     })();
     AnalyticsControllers.OverviewController = OverviewController;
     angular.module('analyticsApp').controller('OverviewController', OverviewController);
 })(AnalyticsControllers || (AnalyticsControllers = {}));
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/d3/d3.d.ts" />
+'use strict';
+var AnalyticsDirectives;
+(function (AnalyticsDirectives) {
+    var HorizontalBarChart = (function () {
+        function HorizontalBarChart() {
+            this.restrict = 'E';
+            this.replace = true;
+            this.templateUrl = '../app/directives/horizontalBarChart/horizontalBarChart.html';
+            this.scope = {
+                data: '='
+            };
+            //angular.IScope
+            this.link = function ($scope, el, attrs) {
+                var data;
+                if ($scope.data) {
+                    data = $scope.data;
+                }
+            };
+            console.log('HorizontalBarChart directive init');
+        }
+        HorizontalBarChart.factory = function () {
+            var directive = function () {
+                return new HorizontalBarChart();
+            };
+            directive.$inject = [];
+            return directive;
+        };
+        return HorizontalBarChart;
+    })();
+    AnalyticsDirectives.HorizontalBarChart = HorizontalBarChart;
+    angular.module('analyticsApp').directive('horizontalBarChart', HorizontalBarChart.factory());
+})(AnalyticsDirectives || (AnalyticsDirectives = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/usersService.ts" />
@@ -625,7 +723,7 @@ var AnalyticsDirectives;
             this.ColoursService = ColoursService;
             this.restrict = 'E';
             this.replace = true;
-            this.transclude = true;
+            this.transclude = true; //todo: check if needed and remove
             this.templateUrl = '../app/directives/pieChart/pieChart.html';
             this.scope = {
                 chartHeading: '@',
@@ -815,3 +913,42 @@ var AnalyticsDirectives;
   <text x="22" y="14">Dijkstra</text>
 </g>
  */ 
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/d3/d3.d.ts" />
+'use strict';
+var AnalyticsDirectives;
+(function (AnalyticsDirectives) {
+    var VerticalBarChart = (function () {
+        function VerticalBarChart() {
+            this.restrict = 'E';
+            this.replace = true;
+            this.templateUrl = '../app/directives/verticalBarChart/verticalBarChart.html';
+            this.scope = {
+                chartHeading: '@',
+                data: '='
+            };
+            //angular.IScope
+            this.link = function ($scope, el, attrs) {
+                var data;
+                if ($scope.data) {
+                    data = $scope.data;
+                }
+                drawChart();
+                function drawChart() {
+                    console.log('drawing vertical bar chart: ', data);
+                }
+            };
+            console.log('awesome vertical chart is here');
+        }
+        VerticalBarChart.factory = function () {
+            var directive = function () {
+                return new VerticalBarChart();
+            };
+            directive.$inject = [];
+            return directive;
+        };
+        return VerticalBarChart;
+    })();
+    AnalyticsDirectives.VerticalBarChart = VerticalBarChart;
+    angular.module('analyticsApp').directive('verticalBarChart', VerticalBarChart.factory());
+})(AnalyticsDirectives || (AnalyticsDirectives = {}));
