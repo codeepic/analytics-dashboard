@@ -938,9 +938,10 @@ var AnalyticsDirectives;
                 function drawChart(w) {
                     if (w === void 0) { w = 640; }
                     console.log('drawing vertical bar chart: ', data);
-                    var margin = { top: 50, right: 50, bottom: 50, left: 100 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
+                    var margin = { top: 30, right: 10, bottom: 40, left: 70 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
                     //todo: investigate
-                    var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+                    var x = d3.scale.ordinal().rangeRoundBands([0, width], .15);
+                    //var x = d3.scale.linear().range([0, width]);
                     var y = d3.scale.linear().range([height, 0]);
                     var xAxis = d3.svg.axis()
                         .scale(x)
@@ -953,7 +954,7 @@ var AnalyticsDirectives;
                         .attr('class', 'd3-tip')
                         .offset([-10, 0])
                         .html(function (d) {
-                        return "<strong>Deregistrations:</strong><span>" + d.deregistrations + "</span>";
+                        return "Deregistrations: " + d.deregistrations;
                     });
                     var svg = d3.select('.vertical-bar-chart').append('svg')
                         .attr('width', width + margin.left + margin.right)
@@ -973,9 +974,9 @@ var AnalyticsDirectives;
                         .append('text')
                         .attr('transform', 'rotate(-90)')
                         .attr('y', 6)
-                        .attr('dy', '.71em')
-                        .style('text-anchor', 'end')
-                        .text('Deregistrations');
+                        .attr('dy', '.71em');
+                    //.style('text-anchor', 'end')
+                    //.text('Deregistrations')
                     svg.selectAll('.bar')
                         .data(data)
                         .enter().append('rect')
