@@ -23,19 +23,28 @@ module AnalyticsDirectives {
             
             if(data) { drawChart(); }
             
+            $scope.$watch(() => {
+                elWidth = el.context.clientWidth;
+                elHeight = el.context. clientHeight
+                return elWidth * elHeight;
+            }, () => {
+                removeChart();
+                drawChart(elWidth);
+            })
+            
+            function removeChart(){
+                d3.select('.vertical-bar-chart svg').remove();
+            }
+            
             //based on //http://bl.ocks.org/Caged/6476579
             //or even better https://bost.ocks.org/mike/bar/3/
             function drawChart(w: number = 640){ 
-                console.log('drawing vertical bar chart: ', data);
-                
                 var margin = { top: 30, right: 10, bottom: 40, left: 70 },
                     width = w - margin.left - margin.right,
                     height = w/2 - margin.top - margin.bottom;
                 
-                //todo: investigate
-                var x = d3.scale.ordinal().rangeRoundBands([0, width], .15);
-                //var x = d3.scale.linear().range([0, width]);
-                var y = d3.scale.linear().range([height, 0]);
+                var x = d3.scale.ordinal().rangeRoundBands([0, width], .15),
+                    y = d3.scale.linear().range([height, 0]);
                 
                 var xAxis = d3.svg.axis()
                     .scale(x)
@@ -43,15 +52,12 @@ module AnalyticsDirectives {
                     
                 var yAxis = d3.svg.axis()
                     .scale(y)
-                    .orient('left')
-                    //.tickFormat(); //check
+                    .orient('left');
                     
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
-                    .html((d) => {
-                       return "Deregistrations: " + d.deregistrations; 
-                    });
+                    .html((d) => "Deregistrations: " + d.deregistrations );
                     
                 var svg = d3.select('.vertical-bar-chart').append('svg')
                     .attr('width', width + margin.left + margin.right)
@@ -61,8 +67,8 @@ module AnalyticsDirectives {
                     
                 svg.call(tip);
                 
-                x.domain(data.map((d) => {return d.age}));
-                y.domain([0, d3.max(data, (d: any) => { return d.deregistrations; })])
+                x.domain(data.map((d) => d.age ));
+                y.domain([0, d3.max(data, (d: any) => d.deregistrations )])
                 
                 svg.append('g')
                     .attr('class', 'x axis')
@@ -83,10 +89,10 @@ module AnalyticsDirectives {
                     .data(data)
                     .enter().append('rect')
                     .attr('class', 'bar')
-                    .attr('x', (d: any) => { return x(d.age); })
+                    .attr('x', (d: any) => x(d.age))
                     .attr('width', x.rangeBand())
-                    .attr('y', (d: any) => { return y(d.deregistrations); })
-                    .attr('height', (d: any) => { return height - y(d.deregistrations); })
+                    .attr('y', (d: any) => y(d.deregistrations))
+                    .attr('height', (d: any) => height - y(d.deregistrations))
                     .on('mouseover', tip.show)
                     .on('mouseout', tip.hide);
             }
