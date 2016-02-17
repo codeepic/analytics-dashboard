@@ -1,19 +1,8 @@
-@import '../mixins';
-
-.line-chart {
-    
-    .axis path,
-	.axis line {
-	  fill: none;
-	  stroke: #000;
-	  shape-rendering: crispEdges;
-	}
-
-	.line {
-	  fill: none;
-	  stroke: $bahia;
-	  stroke-width: 4px;
-	}
-    
-    //.x.axis path { display: none; }
+ @import '../mixins';
+ .line-chart {
+    .line {
+        fill: none;
+        stroke: $bahia;
+        stroke-width: 4px;
+    }
 }

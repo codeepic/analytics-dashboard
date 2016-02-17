@@ -13,9 +13,7 @@ module AnalyticsDirectives {
             data: '='    
         };
         
-        constructor(){
-            console.log('awesome vertical chart is here');
-        }
+        //constructor(){}
         
         //angular.IScope
         link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {

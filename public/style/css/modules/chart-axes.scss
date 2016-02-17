@@ -1,0 +1,11 @@
+@import '../mixins';
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: $stormGrey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.axis .tick text { fill: $stormGrey; }

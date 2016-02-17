@@ -1,0 +1,18 @@
+.d3-tip{
+    color: #fff;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    //@include transition-mixin;
+    
+    &:before{
+        content: '';
+        position: absolute;
+        top: 44px;
+        left: 44%;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid rgba(0, 0, 0, 0.7);
+    }
+}

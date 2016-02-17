@@ -468,16 +468,76 @@ var AnalyticsDirectives;
             this.replace = true;
             this.templateUrl = '../app/directives/horizontalBarChart/horizontalBarChart.html';
             this.scope = {
+                chartHeading: '@',
                 data: '='
             };
             //angular.IScope
             this.link = function ($scope, el, attrs) {
-                var data;
-                if ($scope.data) {
-                    data = $scope.data;
+                var elWidth, elHeight, data = $scope.data;
+                if (data) {
+                    drawChart();
+                }
+                $scope.$watch(function () {
+                    elWidth = el.context.clientWidth;
+                    elHeight = el.context.clientHeight;
+                    return elWidth * elHeight;
+                }, function () {
+                    removeChart();
+                    drawChart(elWidth);
+                });
+                function removeChart() {
+                    d3.select('.horizontal-bar-chart svg').remove();
+                }
+                //based on //http://bl.ocks.org/Caged/6476579
+                //or even better https://bost.ocks.org/mike/bar/3/
+                function drawChart(w) {
+                    if (w === void 0) { w = 640; }
+                    var margin = { top: 30, right: 10, bottom: 40, left: 70 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
+                    var x = d3.scale.ordinal().rangeRoundBands([0, width], .15), y = d3.scale.linear().range([height, 0]);
+                    var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .orient('bottom');
+                    var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient('left');
+                    var tip = d3.tip()
+                        .attr('class', 'd3-tip')
+                        .offset([-10, 0])
+                        .html(function (d) { return "Deregistrations: " + d.deregistrations; });
+                    var svg = d3.select('.horizontal-bar-chart').append('svg')
+                        .attr('width', width + margin.left + margin.right)
+                        .attr('height', height + margin.top + margin.bottom)
+                        .append('g')
+                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                    svg.call(tip);
+                    x.domain(data.map(function (d) { return d.age; }));
+                    y.domain([0, d3.max(data, function (d) { return d.deregistrations; })]);
+                    svg.append('g')
+                        .attr('class', 'x axis')
+                        .attr('transform', 'translate(0,' + height + ')')
+                        .call(xAxis);
+                    svg.append('g')
+                        .attr('class', 'y axis')
+                        .call(yAxis)
+                        .append('text')
+                        .attr('transform', 'rotate(-90)')
+                        .attr('y', 6)
+                        .attr('dy', '.71em');
+                    //.style('text-anchor', 'end')
+                    //.text('Deregistrations')
+                    svg.selectAll('.bar')
+                        .data(data)
+                        .enter().append('rect')
+                        .attr('class', 'bar')
+                        .attr('x', function (d) { return x(d.age); })
+                        .attr('width', x.rangeBand())
+                        .attr('y', function (d) { return y(d.deregistrations); })
+                        .attr('height', function (d) { return height - y(d.deregistrations); })
+                        .on('mouseover', tip.show)
+                        .on('mouseout', tip.hide);
                 }
             };
-            console.log('HorizontalBarChart directive init');
+            console.log('awesome horizontal chart is here');
         }
         HorizontalBarChart.factory = function () {
             var directive = function () {
@@ -491,6 +551,7 @@ var AnalyticsDirectives;
     AnalyticsDirectives.HorizontalBarChart = HorizontalBarChart;
     angular.module('analyticsApp').directive('horizontalBarChart', HorizontalBarChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
+// 
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/usersService.ts" />
@@ -927,6 +988,7 @@ var AnalyticsDirectives;
                 chartHeading: '@',
                 data: '='
             };
+            //constructor(){}
             //angular.IScope
             this.link = function ($scope, el, attrs) {
                 var elWidth, elHeight, data = $scope.data;
@@ -993,7 +1055,6 @@ var AnalyticsDirectives;
                         .on('mouseout', tip.hide);
                 }
             };
-            console.log('awesome vertical chart is here');
         }
         VerticalBarChart.factory = function () {
             var directive = function () {
