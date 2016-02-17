@@ -22,7 +22,7 @@ module AnalyticsDirectives{
 			
             var elWidth: number, elHeight: number, data = $scope.data;
             
-            if($scope.data){
+            if(data){
                 convertDates();
                 drawChart();
             }

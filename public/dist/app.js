@@ -512,7 +512,7 @@ var AnalyticsDirectives;
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
                 var elWidth, elHeight, data = $scope.data;
-                if ($scope.data) {
+                if (data) {
                     convertDates();
                     drawChart();
                 }
@@ -929,13 +929,63 @@ var AnalyticsDirectives;
             };
             //angular.IScope
             this.link = function ($scope, el, attrs) {
-                var data;
-                if ($scope.data) {
-                    data = $scope.data;
+                var elWidth, elHeight, data = $scope.data;
+                if (data) {
+                    drawChart();
                 }
-                drawChart();
-                function drawChart() {
+                //based on //http://bl.ocks.org/Caged/6476579
+                //or even better https://bost.ocks.org/mike/bar/3/
+                function drawChart(w) {
+                    if (w === void 0) { w = 640; }
                     console.log('drawing vertical bar chart: ', data);
+                    var margin = { top: 50, right: 50, bottom: 50, left: 100 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
+                    //todo: investigate
+                    var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+                    var y = d3.scale.linear().range([height, 0]);
+                    var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .orient('bottom');
+                    var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient('left');
+                    //.tickFormat(); //check
+                    var tip = d3.tip()
+                        .attr('class', 'd3-tip')
+                        .offset([-10, 0])
+                        .html(function (d) {
+                        return "<strong>Deregistrations:</strong><span>" + d.deregistrations + "</span>";
+                    });
+                    var svg = d3.select('.vertical-bar-chart').append('svg')
+                        .attr('width', width + margin.left + margin.right)
+                        .attr('height', height + margin.top + margin.bottom)
+                        .append('g')
+                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                    svg.call(tip);
+                    x.domain(data.map(function (d) { return d.age; }));
+                    y.domain([0, d3.max(data, function (d) { return d.deregistrations; })]);
+                    svg.append('g')
+                        .attr('class', 'x axis')
+                        .attr('transform', 'translate(0,' + height + ')')
+                        .call(xAxis);
+                    svg.append('g')
+                        .attr('class', 'y axis')
+                        .call(yAxis)
+                        .append('text')
+                        .attr('transform', 'rotate(-90)')
+                        .attr('y', 6)
+                        .attr('dy', '.71em')
+                        .style('text-anchor', 'end')
+                        .text('Deregistrations');
+                    svg.selectAll('.bar')
+                        .data(data)
+                        .enter().append('rect')
+                        .attr('class', 'bar')
+                        .attr('x', function (d) { return x(d.age); })
+                        .attr('width', x.rangeBand())
+                        .attr('y', function (d) { return y(d.deregistrations); })
+                        .attr('height', function (d) { return height - y(d.deregistrations); })
+                        .on('mouseover', tip.show)
+                        .on('mouseout', tip.hide);
                 }
             };
             console.log('awesome vertical chart is here');
@@ -952,3 +1002,4 @@ var AnalyticsDirectives;
     AnalyticsDirectives.VerticalBarChart = VerticalBarChart;
     angular.module('analyticsApp').directive('verticalBarChart', VerticalBarChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
+// 

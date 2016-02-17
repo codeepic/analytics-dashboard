@@ -4,6 +4,8 @@
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 declare module d3 {
+    export var tip: any;
+    
     /**
      * The current version of D3.js.
      */

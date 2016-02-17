@@ -18,7 +18,12 @@ $freeSpeechRed: #d80000;
 $darkPastelGreen: #00ac24;
 
 //chart colours
- $bahia: #86cc1c;
+$bahia: #86cc1c;
+$flamingo: #e94d5b;        //red
+$atlantis: #89c541;        //green
+$sun: #f47a37;             //orange
+$wildBlueYonder: #8089c2;  //purplish blue
+$summerSky: #1db0e6;  
 
 @mixin transition-mixin($t: 0.3s) {
     -moz-transition: all $t ease;

@@ -10,8 +10,8 @@
 .line-chart,
 .pie-chart,
 .multi-line-chart,
-.horizontalBarChart,
-.verticalBarChart{
+.horizontal-bar-chart,
+.vertical-bar-chart{
     font-size: 0.75em; //12/16 
 	border: 1px solid $veryLightGrey;
 	min-height: 250px;
@@ -20,7 +20,7 @@
 
 .pie-chart { width: 48%; }
 
-.horizontalBarChart,
-.verticalBarChart{
+.horizontal-bar-chart,
+.vertical-bar-chart{
     width: 66%;
 }
