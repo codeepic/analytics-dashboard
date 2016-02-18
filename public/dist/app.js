@@ -331,6 +331,61 @@ var AnalyticsServices;
             q.resolve(data);
             return q.promise;
         };
+        UsersService.prototype.GetDeregistrationsByLocation = function () {
+            var q = this.$q.defer();
+            var data = [
+                {
+                    deregistrations: 55123,
+                    location: 'Dublin'
+                },
+                {
+                    deregistrations: 36514,
+                    location: 'Cork'
+                },
+                {
+                    deregistrations: 13456,
+                    location: 'Derry'
+                },
+                {
+                    deregistrations: 25903,
+                    location: 'Leitrim'
+                },
+                {
+                    deregistrations: 72832,
+                    location: 'Louth'
+                },
+                {
+                    deregistrations: 46322,
+                    location: 'Donegal'
+                },
+                {
+                    deregistrations: 25376,
+                    location: 'Meath'
+                },
+                {
+                    deregistrations: 23742,
+                    location: 'Derry'
+                },
+                {
+                    deregistrations: 28739,
+                    location: 'Down'
+                },
+                {
+                    deregistrations: 23830,
+                    location: 'Antrim'
+                },
+                {
+                    deregistrations: 1332,
+                    location: 'Mayo'
+                },
+                {
+                    deregistrations: 823,
+                    location: 'Limerick'
+                }
+            ];
+            q.resolve(data);
+            return q.promise;
+        };
         UsersService.$inject = ['$q', '$http'];
         return UsersService;
     })();
@@ -400,6 +455,7 @@ var AnalyticsControllers;
             this.GetOffersByCategoryData();
             this.GetVendorsByCategoryData();
             this.GetDeregistrationsByAgeData();
+            this.GetDeregistrationsByLocationData();
             //data="vm.codeDeliveriesData"
             //needed to make the chart directives responsive
             angular.element($window).on('resize', function () {
@@ -451,6 +507,15 @@ var AnalyticsControllers;
                 console.log('there was an error fetching deregistrations by age data');
             });
         };
+        OverviewController.prototype.GetDeregistrationsByLocationData = function () {
+            var _this = this;
+            this.UsersService.GetDeregistrationsByLocation()
+                .then(function (result) {
+                _this.deregistrationsByLocationData = result;
+            }, function () {
+                console.log('there was an error fetching deregistrations by location data');
+            });
+        };
         OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
         return OverviewController;
     })();
@@ -490,16 +555,42 @@ var AnalyticsDirectives;
                 }
                 //based on //http://bl.ocks.org/Caged/6476579
                 //or even better https://bost.ocks.org/mike/bar/3/
+                // function drawChart(w: number = 640){
+                //     var margin = { top: 30, right: 10, bottom: 40, left: 70 },
+                //         width = w - margin.left - margin.right,
+                //         height = w/2 - margin.top - margin.bottom;
+                //     var y = d3.scale.linear().range([height, 0]);
+                //     var chart = d3.select('.horizontal-bar-chart')
+                //         .attr('width', width)
+                //         .attr('height', height);
+                //     y.domain([0, d3.max(data, (d: any) => d.deregistrations)])
+                //     var barWidth = width / data.lentgh;
+                //     var bar = chart.selectAll('g')
+                //         .data(data)
+                //         .enter().append('g')
+                //         .attr('transform', (d: any, i: number) => 'translate(' + i*barWidth + ', 0)');
+                //     bar.append('rect')
+                //         .attr('y', (d: any) => y(d.deregistrations))
+                //         .attr('height', (d: any) => height - y(d.deregistrations))
+                //         .attr('width', barWidth -1);
+                //     bar.append('text')
+                //         .attr('x', barWidth/2)
+                //         .attr('y', (d: any) => y(d.registrations) + 3) //why 3
+                //         .attr('dy', '.75em')
+                //         .text((d: any) => d.deregistrations);            
+                // }
                 function drawChart(w) {
                     if (w === void 0) { w = 640; }
                     var margin = { top: 30, right: 10, bottom: 40, left: 70 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
-                    var x = d3.scale.ordinal().rangeRoundBands([0, width], .15), y = d3.scale.linear().range([height, 0]);
+                    var x = d3.scale.linear().range([0, width - 20]), y = d3.scale.ordinal().rangeRoundBands([0, height], 0.15);
                     var xAxis = d3.svg.axis()
                         .scale(x)
                         .orient('bottom');
                     var yAxis = d3.svg.axis()
                         .scale(y)
-                        .orient('left');
+                        .orient('left')
+                        .tickPadding(6); //todo: check
+                    //todo: tip is not showing up
                     var tip = d3.tip()
                         .attr('class', 'd3-tip')
                         .offset([-10, 0])
@@ -508,31 +599,26 @@ var AnalyticsDirectives;
                         .attr('width', width + margin.left + margin.right)
                         .attr('height', height + margin.top + margin.bottom)
                         .append('g')
-                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                        .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
                     svg.call(tip);
-                    x.domain(data.map(function (d) { return d.age; }));
-                    y.domain([0, d3.max(data, function (d) { return d.deregistrations; })]);
+                    x.domain(d3.extent(data, function (d) { return d.deregistrations; })).nice(); //todo: check
+                    y.domain(data.map(function (d) { return d.location; }));
                     svg.append('g')
                         .attr('class', 'x axis')
                         .attr('transform', 'translate(0,' + height + ')')
                         .call(xAxis);
                     svg.append('g')
                         .attr('class', 'y axis')
-                        .call(yAxis)
-                        .append('text')
-                        .attr('transform', 'rotate(-90)')
-                        .attr('y', 6)
-                        .attr('dy', '.71em');
-                    //.style('text-anchor', 'end')
-                    //.text('Deregistrations')
+                        .attr('transform', 'translate(' + x(0) + ')')
+                        .call(yAxis);
                     svg.selectAll('.bar')
                         .data(data)
                         .enter().append('rect')
                         .attr('class', 'bar')
-                        .attr('x', function (d) { return x(d.age); })
-                        .attr('width', x.rangeBand())
-                        .attr('y', function (d) { return y(d.deregistrations); })
-                        .attr('height', function (d) { return height - y(d.deregistrations); })
+                        .attr('x', function (d) { return x(Math.min(0, d.deregistrations)); })
+                        .attr('y', function (d) { return y(d.location); })
+                        .attr('width', function (d) { return x(d.deregistrations); }) //check
+                        .attr('height', y.rangeBand()) //maybe tweak it to change the height of the bars
                         .on('mouseover', tip.show)
                         .on('mouseout', tip.hide);
                 }

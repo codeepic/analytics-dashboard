@@ -38,37 +38,73 @@ module AnalyticsDirectives {
             
             //based on //http://bl.ocks.org/Caged/6476579
             //or even better https://bost.ocks.org/mike/bar/3/
-            function drawChart(w: number = 640){ 
+            // function drawChart(w: number = 640){
+            //     var margin = { top: 30, right: 10, bottom: 40, left: 70 },
+            //         width = w - margin.left - margin.right,
+            //         height = w/2 - margin.top - margin.bottom;
+                
+            //     var y = d3.scale.linear().range([height, 0]);
+            
+            //     var chart = d3.select('.horizontal-bar-chart')
+            //         .attr('width', width)
+            //         .attr('height', height);
+                
+            //     y.domain([0, d3.max(data, (d: any) => d.deregistrations)])
+                
+            //     var barWidth = width / data.lentgh;
+                
+            //     var bar = chart.selectAll('g')
+            //         .data(data)
+            //         .enter().append('g')
+            //         .attr('transform', (d: any, i: number) => 'translate(' + i*barWidth + ', 0)');
+                    
+            //     bar.append('rect')
+            //         .attr('y', (d: any) => y(d.deregistrations))
+            //         .attr('height', (d: any) => height - y(d.deregistrations))
+            //         .attr('width', barWidth -1);
+                    
+            //     bar.append('text')
+            //         .attr('x', barWidth/2)
+            //         .attr('y', (d: any) => y(d.registrations) + 3) //why 3
+            //         .attr('dy', '.75em')
+            //         .text((d: any) => d.deregistrations);            
+            // }
+            
+            function drawChart(w: number = 640){
                 var margin = { top: 30, right: 10, bottom: 40, left: 70 },
                     width = w - margin.left - margin.right,
                     height = w/2 - margin.top - margin.bottom;
                 
-                var x = d3.scale.ordinal().rangeRoundBands([0, width], .15),
-                    y = d3.scale.linear().range([height, 0]);
-                
+                var x = d3.scale.linear().range([0, width - 20]),
+                    y = d3.scale.ordinal().rangeRoundBands([0, height], 0.15);
+                    
                 var xAxis = d3.svg.axis()
                     .scale(x)
                     .orient('bottom');
                     
                 var yAxis = d3.svg.axis()
                     .scale(y)
-                    .orient('left');
+                    .orient('left')
+                    //.tickSize(2)        //todo: check
+                    .tickPadding(6);    //todo: check
                     
+                //todo: tip is not showing up
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
+                    //.offset([0, (d: any) => x(d.deregistrations)]) //tried to offset it to the right from the bar - not working
                     .html((d) => "Deregistrations: " + d.deregistrations );
                     
                 var svg = d3.select('.horizontal-bar-chart').append('svg')
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.top + margin.bottom)
                     .append('g')
-                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                    .attr('transform', 'translate(' + margin.left + ', ' + margin.top+ ')');
                     
-                svg.call(tip);
+                svg.call(tip)
                 
-                x.domain(data.map((d) => d.age ));
-                y.domain([0, d3.max(data, (d: any) => d.deregistrations )])
+                x.domain(d3.extent(data, (d: any) => d.deregistrations)).nice(); //todo: check
+                y.domain(data.map((d: any) => d.location ));
                 
                 svg.append('g')
                     .attr('class', 'x axis')
@@ -77,24 +113,20 @@ module AnalyticsDirectives {
                     
                 svg.append('g')
                     .attr('class', 'y axis')
-                    .call(yAxis)
-                    .append('text')
-                    .attr('transform', 'rotate(-90)')
-                    .attr('y', 6)
-                    .attr('dy', '.71em');
-                    //.style('text-anchor', 'end')
-                    //.text('Deregistrations')
+                    .attr('transform', 'translate(' + x(0) + ')')
+                    .call(yAxis);
                     
                 svg.selectAll('.bar')
                     .data(data)
                     .enter().append('rect')
                     .attr('class', 'bar')
-                    .attr('x', (d: any) => x(d.age))
-                    .attr('width', x.rangeBand())
-                    .attr('y', (d: any) => y(d.deregistrations))
-                    .attr('height', (d: any) => height - y(d.deregistrations))
+                    .attr('x', (d: any) => x(Math.min(0, d.deregistrations)))
+                    .attr('y', (d: any) => y(d.location))
+                    .attr('width', (d: any) => x(d.deregistrations)) //check
+                    .attr('height', y.rangeBand()) //maybe tweak it to change the height of the bars
                     .on('mouseover', tip.show)
                     .on('mouseout', tip.hide);
+                    
             }
         }
         

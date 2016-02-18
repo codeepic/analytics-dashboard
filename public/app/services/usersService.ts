@@ -159,6 +159,65 @@ module AnalyticsServices {
             
             return q.promise
         }
+        
+        public GetDeregistrationsByLocation(): angular.IPromise<Array<IDeregistrationByLocation>> { //todo: add interface
+            var q = this.$q.defer();
+            
+            var data = [
+                {
+                    deregistrations: 55123,
+                    location: 'Dublin'
+                },
+                {
+                    deregistrations: 36514,
+                    location: 'Cork'
+                },
+                {
+                    deregistrations: 13456,
+                    location: 'Derry'
+                },
+                {
+                    deregistrations: 25903,
+                    location: 'Leitrim'
+                },
+                {
+                    deregistrations: 72832,
+                    location: 'Louth'
+                },
+                {
+                    deregistrations: 46322,
+                    location: 'Donegal'
+                },
+                {
+                    deregistrations: 25376,
+                    location: 'Meath'
+                },
+                {
+                    deregistrations: 23742,
+                    location: 'Derry'
+                },
+                {
+                    deregistrations: 28739,
+                    location: 'Down'
+                },
+                {
+                    deregistrations: 23830,
+                    location: 'Antrim'
+                },
+                {
+                    deregistrations: 1332,
+                    location: 'Mayo'
+                },
+                {
+                    deregistrations: 823,
+                    location: 'Limerick'
+                }
+            ];
+            
+            q.resolve(data);
+            
+            return q.promise
+        }
 	}
 
 	angular.module('analyticsApp').service('UsersService', UsersService);
@@ -172,4 +231,9 @@ interface IUserData{
 interface IDeregistrationByAge{
     deregistrations: number;
     age: string;
+}
+
+interface IDeregistrationByLocation{
+    deregistrations: number;
+    location: string;
 }

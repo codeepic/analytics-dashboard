@@ -13,8 +13,10 @@ module AnalyticsControllers {
         private codeDeliveriesData: any; //todo: add interface
         private offersByCategoryData: Array<IByCategoryData>; //todo: add interfaces
         private vendorsByCategoryData: Array<IByCategoryData>; //todo: add interfaces
-        private deregistrationsByAgeData: any; //Array<> //todo: add interfaces
-		constructor(
+        private deregistrationsByAgeData: Array<IDeregistrationByAge>; //Array<> //todo: add interfaces
+        private deregistrationsByLocationData: Array<IDeregistrationByLocation>; //Array<> //todo: add interfaces
+		
+        constructor(
             private $window: angular.IWindowService,
             private $scope: angular.IScope,
             private UsersService: AnalyticsServices.UsersService,
@@ -27,6 +29,7 @@ module AnalyticsControllers {
             this.GetOffersByCategoryData();
             this.GetVendorsByCategoryData();
             this.GetDeregistrationsByAgeData();
+            this.GetDeregistrationsByLocationData();
             //data="vm.codeDeliveriesData"
             
             //needed to make the chart directives responsive
@@ -77,6 +80,15 @@ module AnalyticsControllers {
                     this.deregistrationsByAgeData = result;
                 }, () => {
                     console.log('there was an error fetching deregistrations by age data');
+                })
+        }
+        
+        private GetDeregistrationsByLocationData(): void {
+            this.UsersService.GetDeregistrationsByLocation()
+                .then((result: Array<IDeregistrationByLocation>) => {
+                    this.deregistrationsByLocationData = result;
+                }, () => {
+                    console.log('there was an error fetching deregistrations by location data');
                 })
         }
 	}
