@@ -1,5 +1,5 @@
 var gulp = require('gulp'),
-    sass = require('gulp-sass')
+    sass = require('gulp-sass'),
     minifyCSS = require('gulp-minify-css'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
@@ -21,11 +21,6 @@ var sassFilesToCompress = [
 var jsFiles = [
     './public/app/**/**/*.ts',
     './public/app/*.ts'
-
-	  // './public/app/*.ts',
-   //  './public/app/services/**/*.ts',
-   //  './public/app/controllers/**/*.ts',
-   //  './public/app/directives/**/*.ts'
 ];
 
 //watch subtasks

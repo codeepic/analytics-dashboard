@@ -1,5 +1,7 @@
 <h2>Analytics Overview</h2>
 
+<line-chart data='vm.usersData' chart-heading="Total Number of Users"></line-chart>
+
 <div>
     <horizontal-bar-chart chart-heading="Deregistrations Split by Location" data="vm.deregistrationsByLocationData"></horizontal-bar-chart>
     <span class="clear"></span>
@@ -11,15 +13,10 @@
 </div>
 
 <div>
-	<!--<pie-chart class="left" id="offers-pie-chart" chart-name="Offers by Category" data="vm.offersByCategoryData"></pie-chart>
-	<pie-chart class="right" id="vendors-pie-chart" chart-name="Vendors by Category" data="vm.vendorsByCategoryData"></pie-chart>-->
-    <!-- instead of sending so many values, send one object in.-->
     <pie-chart class="left" id="offers-pie-chart" chart-heading="Offers by Category" chart-name="Live Offers" chart-name-colour="#8089c2" data="vm.offersByCategoryData"></pie-chart>
 	<pie-chart class="right" id="vendors-pie-chart" chart-heading="Vendors by Category" chart-name="Vendors" chart-name-colour="#89c541" data="vm.vendorsByCategoryData"></pie-chart>
 	<span class="clear"></span>
 </div>
 
-<multi-line-chart data="vm.codeDeliveriesData"></multi-line-chart> 
-
-<line-chart data='vm.usersData'></line-chart>
+<multi-line-chart data="vm.codeDeliveriesData"></multi-line-chart>
 	

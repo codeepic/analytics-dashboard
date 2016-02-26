@@ -9,6 +9,7 @@ module AnalyticsDirectives{
 		templateUrl: string = '../app/directives/lineChart/lineChart.html';
         replace: boolean = true;
 		scope = {
+            chartHeading: '@', 
 			data: '='
 		}
 
