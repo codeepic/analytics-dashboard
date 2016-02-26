@@ -1,6 +1,6 @@
 @import '../mixins';
 
 .horizontal-bar-chart{
-    .bar { fill: $sun; @include transition-mixin; }
-    .bar:hover { fill: darken($sun, 10%); }
+    .bar { fill: $crustaCh; @include transition-mixin; }
+    .bar:hover { fill: darken($crustaCh, 10%); }
 }

@@ -1,6 +1,6 @@
 @import '../mixins';
 
 .vertical-bar-chart{
-    .bar { fill: $flamingo; @include transition-mixin; }
-    .bar:hover { fill: darken($flamingo, 10%); }
+    .bar { fill: $flamingoCh; @include transition-mixin; }
+    .bar:hover { fill: darken($flamingoCh, 10%); }
 }
