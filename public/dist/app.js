@@ -729,14 +729,22 @@ var AnalyticsDirectives;
                         .datum(data)
                         .attr("class", "line")
                         .attr("d", line);
+                    //add tooltip
+                    var tip = d3.tip()
+                        .attr('class', 'd3-tip on-line-chart')
+                        .offset([-20, 0]) //top/ left
+                        .html(function (d) { return 'Users: ' + d.users; });
+                    svg.call(tip);
                     //add circes
-                    svg.selectAll('circle')
+                    var circle = svg.selectAll('circle')
                         .data(data)
                         .enter().append('circle')
                         .style('fill', circleColour) //todo: change
                         .attr('cx', line.x())
                         .attr('cy', line.y())
-                        .attr('r', 7);
+                        .attr('r', 7)
+                        .on('mouseover', tip.show)
+                        .on('mouseout', tip.hide);
                 }
             };
         }
