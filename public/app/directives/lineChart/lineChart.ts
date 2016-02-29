@@ -1,6 +1,7 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/usersService.ts" />
+/// <reference path="../../services/coloursService.ts" />
 'use strict';
 
 module AnalyticsDirectives{
@@ -14,14 +15,20 @@ module AnalyticsDirectives{
 		}
 
         //todo: remove $timeout dependency here and in facvtory() fn
-		constructor(private $timeout: angular.ITimeoutService){} 
+		constructor(
+            private $timeout: angular.ITimeoutService,
+            private ColoursService: AnalyticsServices.ColoursService
+            ){} 
 		
 		// you can set $scope to implement certain interface that extends angular.IScope, 
 		// but then you will tie the directive to one data set and it will not be
 		// reusable, therefore use 'any' instead
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
 			
-            var elWidth: number, elHeight: number, data = $scope.data;
+            var elWidth: number, elHeight: number,
+                data = $scope.data,
+                circleColour = this.ColoursService.colours.atlantisCh;
+            
             
             if(data){
                 convertDates();
@@ -92,17 +99,28 @@ module AnalyticsDirectives{
                     .datum(data)
                     .attr("class", "line")
                     .attr("d", line);    
+                    
+                //add circes
+                svg.selectAll('circle')
+                  .data(data)
+                  .enter().append('circle')
+                  //.attr('class', 'line')
+                  .style('fill', circleColour) //todo: change
+                  .attr('cx', line.x() as any) 
+                  .attr('cy', line.y() as any)
+                  .attr('r', 7);
             }
 		};
 
 		static factory(): angular.IDirectiveFactory {
-			var directive: angular.IDirectiveFactory = ($timeout: angular.ITimeoutService) => {
-					return new LineChart($timeout);
+			var directive: angular.IDirectiveFactory = ($timeout: angular.ITimeoutService, ColoursService: AnalyticsServices.ColoursService) => {
+					return new LineChart($timeout, ColoursService);
 			};
-			directive.$inject = ['$timeout'];
+			directive.$inject = ['$timeout', 'ColoursService'];
 			return directive;
 		}
 	}
 
 	angular.module('analyticsApp').directive('lineChart', LineChart.factory());
 }
+//

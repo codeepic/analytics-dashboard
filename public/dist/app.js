@@ -654,13 +654,16 @@ var AnalyticsDirectives;
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/usersService.ts" />
+/// <reference path="../../services/coloursService.ts" />
 'use strict';
 var AnalyticsDirectives;
 (function (AnalyticsDirectives) {
     var LineChart = (function () {
         //todo: remove $timeout dependency here and in facvtory() fn
-        function LineChart($timeout) {
+        function LineChart($timeout, ColoursService) {
+            var _this = this;
             this.$timeout = $timeout;
+            this.ColoursService = ColoursService;
             this.restrict = 'E';
             this.templateUrl = '../app/directives/lineChart/lineChart.html';
             this.replace = true;
@@ -672,7 +675,7 @@ var AnalyticsDirectives;
             // but then you will tie the directive to one data set and it will not be
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
-                var elWidth, elHeight, data = $scope.data;
+                var elWidth, elHeight, data = $scope.data, circleColour = _this.ColoursService.colours.atlantisCh;
                 if (data) {
                     convertDates();
                     drawChart();
@@ -726,14 +729,22 @@ var AnalyticsDirectives;
                         .datum(data)
                         .attr("class", "line")
                         .attr("d", line);
+                    //add circes
+                    svg.selectAll('circle')
+                        .data(data)
+                        .enter().append('circle')
+                        .style('fill', circleColour) //todo: change
+                        .attr('cx', line.x())
+                        .attr('cy', line.y())
+                        .attr('r', 7);
                 }
             };
         }
         LineChart.factory = function () {
-            var directive = function ($timeout) {
-                return new LineChart($timeout);
+            var directive = function ($timeout, ColoursService) {
+                return new LineChart($timeout, ColoursService);
             };
-            directive.$inject = ['$timeout'];
+            directive.$inject = ['$timeout', 'ColoursService'];
             return directive;
         };
         return LineChart;
@@ -741,6 +752,7 @@ var AnalyticsDirectives;
     AnalyticsDirectives.LineChart = LineChart;
     angular.module('analyticsApp').directive('lineChart', LineChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
+// 
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 'use strict';
