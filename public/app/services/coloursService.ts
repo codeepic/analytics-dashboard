@@ -5,7 +5,9 @@
 module AnalyticsServices {
     export class ColoursService {
         
-        public colours = {
+        public grey: string= '#807e7e';
+        
+        public chartColours = {
             // flamingo: '#e94d5b',        //red
             // atlantis: '#89c541',        //green
             // sun: '#f47a37',             //orange

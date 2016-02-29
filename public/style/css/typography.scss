@@ -1,7 +1,7 @@
 @import 'mixins';
 
 body, p, button, textarea, input, select, label{ font-size: 16px; }
-h1, h2, h3, h4, h5, h6, p, span, label, li, th, td{ color: $grey; }
+h1, h2, h3, h4, h5, h6, p, span, label, li, th, td, svg > text, svg > text > tspan{ color: $grey; }
 textarea, input, select { color: $stormGrey; }
 a{ text-decoration: none; color: #fff; }
 

@@ -12,7 +12,6 @@ module AnalyticsDirectives{
         scope = {
             chartHeading: '@', 
             chartName: '@',
-            chartNameColour: '@',
             data: '='    
         };
         
@@ -22,7 +21,9 @@ module AnalyticsDirectives{
 		// but then you will tie the directive to one data set and it will not be
 		// reusable, therefore use 'any' instead
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
-            var elWidth: number, elHeight: number, data = $scope.data, that = this;
+            var elWidth: number, elHeight: number, data = $scope.data,
+            chartColours = this.ColoursService.chartColours;
+            //grey = this.ColoursService.grey;
             
             if(data){ drawChart(); }
             
@@ -45,7 +46,7 @@ module AnalyticsDirectives{
                         height = w * 2, //was w
                         radius = Math.min(width, height) / 2;
                     
-                    var colourValues = d3.scale.ordinal().range(d3.values(that.ColoursService.colours));
+                    var colourValues = d3.scale.ordinal().range(d3.values(chartColours));
                     
                     var arc = d3.svg.arc()
                         .outerRadius(radius - 10)
@@ -88,16 +89,17 @@ module AnalyticsDirectives{
                 //     .text(total + '' + $scope.chartName.toUpperCase());
                 
                 var text = svg.append('text')
-                    .attr('font-size', '40')
-                    .attr('font-weight', 'bold')
-                    .attr('fill', $scope.chartNameColour);
+                    .attr('font-weight', 'bold');
+                    //.attr('fill', grey);
                 
                 text.append('tspan')
-                    .attr('x', '-7%')
+                    .attr('font-size', '72')
+                    .attr('x', '-8%')
                     .attr('dy','0')
                     .text(quantitySumText);
                     
                 text.append('tspan')
+                    .attr('font-size', '40')
                     .attr('x', '-20%')
                     .attr('dy','40')
                     .text($scope.chartName.toUpperCase());

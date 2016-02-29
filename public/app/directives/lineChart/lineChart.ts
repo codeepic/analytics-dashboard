@@ -27,7 +27,7 @@ module AnalyticsDirectives{
 			
             var elWidth: number, elHeight: number,
                 data = $scope.data,
-                circleColour = this.ColoursService.colours.atlantisCh;
+                circleColour = this.ColoursService.chartColours.atlantisCh;
             
             
             if(data){
@@ -108,7 +108,7 @@ module AnalyticsDirectives{
                     
                 svg.call(tip);
                     
-                //add circes
+                //add circles
                 var circle = svg.selectAll('circle')
                   .data(data)
                   .enter().append('circle')

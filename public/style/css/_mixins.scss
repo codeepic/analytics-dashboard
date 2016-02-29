@@ -55,6 +55,12 @@ $paleGreenCh:       #97f7b0;
     }
 }
 
+@mixin calc-mixin($property, $value){
+    #{$property}: -webkit-calc(#{$value});
+    #{$property}: -moz-calc(#{$value});
+    #{$property}: calc(#{$value});
+}
+
 .right{ float: right; }
 .left{ float: left; }
 

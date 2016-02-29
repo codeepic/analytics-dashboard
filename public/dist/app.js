@@ -168,7 +168,8 @@ var AnalyticsServices;
 (function (AnalyticsServices) {
     var ColoursService = (function () {
         function ColoursService() {
-            this.colours = {
+            this.grey = '#807e7e';
+            this.chartColours = {
                 // flamingo: '#e94d5b',        //red
                 // atlantis: '#89c541',        //green
                 // sun: '#f47a37',             //orange
@@ -449,93 +450,6 @@ var AnalyticsServices;
     angular.module('analyticsApp').service('VendorsService', VendorsService);
 })(AnalyticsServices || (AnalyticsServices = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../services/usersService.ts" />
-/// <reference path="../../services/codesService.ts" />
-/// <reference path="../../services/offersService.ts" />
-/// <reference path="../../services/vendorsService.ts" />
-var AnalyticsControllers;
-(function (AnalyticsControllers) {
-    var OverviewController = (function () {
-        function OverviewController($window, $scope, UsersService, CodesService, OffersService, VendorsService) {
-            this.$window = $window;
-            this.$scope = $scope;
-            this.UsersService = UsersService;
-            this.CodesService = CodesService;
-            this.OffersService = OffersService;
-            this.VendorsService = VendorsService;
-            this.GetUsersData();
-            this.GetCodeDeliveriesData();
-            this.GetOffersByCategoryData();
-            this.GetVendorsByCategoryData();
-            this.GetDeregistrationsByAgeData();
-            this.GetDeregistrationsByLocationData();
-            //data="vm.codeDeliveriesData"
-            //needed to make the chart directives responsive
-            angular.element($window).on('resize', function () {
-                $scope.$apply();
-            });
-        }
-        OverviewController.prototype.GetUsersData = function () {
-            var _this = this;
-            this.UsersService.GetUsers()
-                .then(function (usersData) {
-                _this.usersData = usersData;
-            }, function (error) {
-                console.log('there was an error fetching users');
-            });
-        };
-        OverviewController.prototype.GetCodeDeliveriesData = function () {
-            var _this = this;
-            this.CodesService.GetCodeDeliveries()
-                .then(function (codeDeliveriesData) {
-                _this.codeDeliveriesData = codeDeliveriesData;
-            }, function (error) {
-                console.log('there was an error fetching code deliveries');
-            });
-        };
-        OverviewController.prototype.GetOffersByCategoryData = function () {
-            var _this = this;
-            this.OffersService.GetOffersByCategory()
-                .then(function (offersByCategoryData) {
-                _this.offersByCategoryData = offersByCategoryData;
-            }, function (error) {
-                console.log('there was an error fetching offers by category data');
-            });
-        };
-        OverviewController.prototype.GetVendorsByCategoryData = function () {
-            var _this = this;
-            this.VendorsService.GetVendorsByCategory()
-                .then(function (vendorsByCategoryData) {
-                _this.vendorsByCategoryData = vendorsByCategoryData;
-            }, function (error) {
-                console.log('there was an error fetching vendors by category data');
-            });
-        };
-        OverviewController.prototype.GetDeregistrationsByAgeData = function () {
-            var _this = this;
-            this.UsersService.GetDeregistrationsByAge()
-                .then(function (result) {
-                _this.deregistrationsByAgeData = result;
-            }, function () {
-                console.log('there was an error fetching deregistrations by age data');
-            });
-        };
-        OverviewController.prototype.GetDeregistrationsByLocationData = function () {
-            var _this = this;
-            this.UsersService.GetDeregistrationsByLocation()
-                .then(function (result) {
-                _this.deregistrationsByLocationData = result;
-            }, function () {
-                console.log('there was an error fetching deregistrations by location data');
-            });
-        };
-        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
-        return OverviewController;
-    })();
-    AnalyticsControllers.OverviewController = OverviewController;
-    angular.module('analyticsApp').controller('OverviewController', OverviewController);
-})(AnalyticsControllers || (AnalyticsControllers = {}));
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 'use strict';
 var AnalyticsDirectives;
@@ -675,7 +589,7 @@ var AnalyticsDirectives;
             // but then you will tie the directive to one data set and it will not be
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
-                var elWidth, elHeight, data = $scope.data, circleColour = _this.ColoursService.colours.atlantisCh;
+                var elWidth, elHeight, data = $scope.data, circleColour = _this.ColoursService.chartColours.atlantisCh;
                 if (data) {
                     convertDates();
                     drawChart();
@@ -735,7 +649,7 @@ var AnalyticsDirectives;
                         .offset([-20, 0]) //top/ left
                         .html(function (d) { return 'Users: ' + d.users; });
                     svg.call(tip);
-                    //add circes
+                    //add circles
                     var circle = svg.selectAll('circle')
                         .data(data)
                         .enter().append('circle')
@@ -909,14 +823,14 @@ var AnalyticsDirectives;
             this.scope = {
                 chartHeading: '@',
                 chartName: '@',
-                chartNameColour: '@',
                 data: '='
             };
             // you can set $scope to implement certain interface that extends angular.IScope, 
             // but then you will tie the directive to one data set and it will not be
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
-                var elWidth, elHeight, data = $scope.data, that = _this;
+                var elWidth, elHeight, data = $scope.data, chartColours = _this.ColoursService.chartColours;
+                //grey = this.ColoursService.grey;
                 if (data) {
                     drawChart();
                 }
@@ -936,7 +850,7 @@ var AnalyticsDirectives;
                     if (w === void 0) { w = 460; }
                     var width = w, height = w * 2, //was w
                     radius = Math.min(width, height) / 2;
-                    var colourValues = d3.scale.ordinal().range(d3.values(that.ColoursService.colours));
+                    var colourValues = d3.scale.ordinal().range(d3.values(chartColours));
                     var arc = d3.svg.arc()
                         .outerRadius(radius - 10)
                         .innerRadius(radius - 50); //70 230
@@ -970,14 +884,15 @@ var AnalyticsDirectives;
                     //     .attr('fill', '#999999')
                     //     .text(total + '' + $scope.chartName.toUpperCase());
                     var text = svg.append('text')
-                        .attr('font-size', '40')
-                        .attr('font-weight', 'bold')
-                        .attr('fill', $scope.chartNameColour);
+                        .attr('font-weight', 'bold');
+                    //.attr('fill', grey);
                     text.append('tspan')
-                        .attr('x', '-7%')
+                        .attr('font-size', '72')
+                        .attr('x', '-8%')
                         .attr('dy', '0')
                         .text(quantitySumText);
                     text.append('tspan')
+                        .attr('font-size', '40')
                         .attr('x', '-20%')
                         .attr('dy', '40')
                         .text($scope.chartName.toUpperCase());
@@ -1189,3 +1104,90 @@ var AnalyticsDirectives;
     angular.module('analyticsApp').directive('verticalBarChart', VerticalBarChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
 // 
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../services/usersService.ts" />
+/// <reference path="../../services/codesService.ts" />
+/// <reference path="../../services/offersService.ts" />
+/// <reference path="../../services/vendorsService.ts" />
+var AnalyticsControllers;
+(function (AnalyticsControllers) {
+    var OverviewController = (function () {
+        function OverviewController($window, $scope, UsersService, CodesService, OffersService, VendorsService) {
+            this.$window = $window;
+            this.$scope = $scope;
+            this.UsersService = UsersService;
+            this.CodesService = CodesService;
+            this.OffersService = OffersService;
+            this.VendorsService = VendorsService;
+            this.GetUsersData();
+            this.GetCodeDeliveriesData();
+            this.GetOffersByCategoryData();
+            this.GetVendorsByCategoryData();
+            this.GetDeregistrationsByAgeData();
+            this.GetDeregistrationsByLocationData();
+            //data="vm.codeDeliveriesData"
+            //needed to make the chart directives responsive
+            angular.element($window).on('resize', function () {
+                $scope.$apply();
+            });
+        }
+        OverviewController.prototype.GetUsersData = function () {
+            var _this = this;
+            this.UsersService.GetUsers()
+                .then(function (usersData) {
+                _this.usersData = usersData;
+            }, function (error) {
+                console.log('there was an error fetching users');
+            });
+        };
+        OverviewController.prototype.GetCodeDeliveriesData = function () {
+            var _this = this;
+            this.CodesService.GetCodeDeliveries()
+                .then(function (codeDeliveriesData) {
+                _this.codeDeliveriesData = codeDeliveriesData;
+            }, function (error) {
+                console.log('there was an error fetching code deliveries');
+            });
+        };
+        OverviewController.prototype.GetOffersByCategoryData = function () {
+            var _this = this;
+            this.OffersService.GetOffersByCategory()
+                .then(function (offersByCategoryData) {
+                _this.offersByCategoryData = offersByCategoryData;
+            }, function (error) {
+                console.log('there was an error fetching offers by category data');
+            });
+        };
+        OverviewController.prototype.GetVendorsByCategoryData = function () {
+            var _this = this;
+            this.VendorsService.GetVendorsByCategory()
+                .then(function (vendorsByCategoryData) {
+                _this.vendorsByCategoryData = vendorsByCategoryData;
+            }, function (error) {
+                console.log('there was an error fetching vendors by category data');
+            });
+        };
+        OverviewController.prototype.GetDeregistrationsByAgeData = function () {
+            var _this = this;
+            this.UsersService.GetDeregistrationsByAge()
+                .then(function (result) {
+                _this.deregistrationsByAgeData = result;
+            }, function () {
+                console.log('there was an error fetching deregistrations by age data');
+            });
+        };
+        OverviewController.prototype.GetDeregistrationsByLocationData = function () {
+            var _this = this;
+            this.UsersService.GetDeregistrationsByLocation()
+                .then(function (result) {
+                _this.deregistrationsByLocationData = result;
+            }, function () {
+                console.log('there was an error fetching deregistrations by location data');
+            });
+        };
+        OverviewController.$inject = ['$window', '$scope', 'UsersService', 'CodesService', 'OffersService', 'VendorsService'];
+        return OverviewController;
+    })();
+    AnalyticsControllers.OverviewController = OverviewController;
+    angular.module('analyticsApp').controller('OverviewController', OverviewController);
+})(AnalyticsControllers || (AnalyticsControllers = {}));
