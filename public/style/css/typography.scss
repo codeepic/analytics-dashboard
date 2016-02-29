@@ -1,7 +1,7 @@
 @import 'mixins';
 
 body, p, button, textarea, input, select, label{ font-size: 16px; }
-h1, h2, h3, h4, h5, h6, p, span, label, li, th, td, svg > text, svg > text > tspan{ color: $grey; }
+h1, h2, h3, h4, h5, h6, p, span, label, li, th, td{ color: $grey; }
 textarea, input, select { color: $stormGrey; }
 a{ text-decoration: none; color: #fff; }
 
@@ -16,3 +16,7 @@ h3 { font-size: 1.125em; }      // 18/16
 h4 { font-size: 1em; }          // 16
 h5 { font-size: 0.75em; }       // 12/16
 h6 { font-size: 0.625em; }      // 10/16
+
+//chart text colours
+text {fill: $grey; }
+text.white {fill: #fff; }

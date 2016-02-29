@@ -23,7 +23,6 @@ module AnalyticsDirectives{
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
             var elWidth: number, elHeight: number, data = $scope.data,
             chartColours = this.ColoursService.chartColours;
-            //grey = this.ColoursService.grey;
             
             if(data){ drawChart(); }
             
@@ -77,6 +76,7 @@ module AnalyticsDirectives{
                 g.append('text')
                     .attr('transform', function(d: any) { return 'translate(' + arc.centroid(d) + ')'})
                     .attr('dy', '0.5em')
+                    .attr('class', 'white')
                     .text(function(d: any){ return d.data.quantity})
                     
                 var quantitySumText = d3.sum(data, (d: any) =>  d.quantity );
@@ -90,7 +90,6 @@ module AnalyticsDirectives{
                 
                 var text = svg.append('text')
                     .attr('font-weight', 'bold');
-                    //.attr('fill', grey);
                 
                 text.append('tspan')
                     .attr('font-size', '72')
