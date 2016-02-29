@@ -81,13 +81,6 @@ module AnalyticsDirectives{
                     
                 var quantitySumText = d3.sum(data, (d: any) =>  d.quantity );
                 
-                // svg.append('text')
-                //     .attr('transform', 'translate(' + width/2 + ',' + height/2 + ')')
-                //     .attr('transform', 'translate(-100, 0)')
-                //     .attr('font-size', '44')
-                //     .attr('fill', '#999999')
-                //     .text(total + '' + $scope.chartName.toUpperCase());
-                
                 var text = svg.append('text')
                     .attr('font-weight', 'bold');
                 
@@ -110,6 +103,10 @@ module AnalyticsDirectives{
                 //     .style('font-size', '12px')
                 //     .call(d3.legend);
                 
+                function createLegend(){
+                    //implement
+                }
+                
                 //todo: get all this crap into one neat function using loop
                 var yPos = 330;
                 var legend1 = svg.append('g')
@@ -118,16 +115,15 @@ module AnalyticsDirectives{
                     .attr('height', '50')
                     .attr('width', '50');
                     
-                    legend1.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(57, 59, 121)');
-                        //.style('stroke', 'rgb(57, 59, 121)');
-                        
-                    legend1.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('kakakak');
+                legend1.append('rect')
+                    .attr('width', '20')
+                    .attr('height', '20')
+                    .style('fill', 'rgb(57, 59, 121)');
+                    
+                legend1.append('text')
+                    .attr('x', '30')
+                    .attr('y', '14')
+                    .text('kakakak');
                         
                 var legend2 = svg.append('g')
                     .attr('class', 'legend')
@@ -135,16 +131,15 @@ module AnalyticsDirectives{
                     .attr('height', '50')
                     .attr('width', '50');
                     
-                    legend2.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(23, 159, 221)');
-                        //.style('stroke', 'rgb(57, 59, 121)');
-                        
-                    legend2.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('omomom');
+                legend2.append('rect')
+                    .attr('width', '20')
+                    .attr('height', '20')
+                    .style('fill', 'rgb(23, 159, 221)');
+                    
+                legend2.append('text')
+                    .attr('x', '30')
+                    .attr('y', '14')
+                    .text('omomom');
                         
                 var legend3 = svg.append('g')
                     .attr('class', 'legend')
@@ -152,16 +147,15 @@ module AnalyticsDirectives{
                     .attr('height', '50')
                     .attr('width', '50');
                     
-                    legend3.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(123, 239, 121)');
-                        //.style('stroke', 'rgb(57, 59, 121)');
-                        
-                    legend3.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('karramba');
+                legend3.append('rect')
+                    .attr('width', '20')
+                    .attr('height', '20')
+                    .style('fill', 'rgb(123, 239, 121)');
+                    
+                legend3.append('text')
+                    .attr('x', '30')
+                    .attr('y', '14')
+                    .text('karramba');
                         
                         //right column
                 var xPosRight = 30
@@ -171,16 +165,15 @@ module AnalyticsDirectives{
                     .attr('height', '50')
                     .attr('width', '50');
                     
-                    legend1.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(90, 78, 221)');
-                        //.style('stroke', 'rgb(57, 59, 121)');
-                        
-                    legend1.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('nahfs');
+                legend1.append('rect')
+                    .attr('width', '20')
+                    .attr('height', '20')
+                    .style('fill', 'rgb(90, 78, 221)');
+                    
+                legend1.append('text')
+                    .attr('x', '30')
+                    .attr('y', '14')
+                    .text('nahfs');
                         
                 var legend2 = svg.append('g')
                     .attr('class', 'legend')
@@ -188,18 +181,15 @@ module AnalyticsDirectives{
                     .attr('height', '50')
                     .attr('width', '50');
                     
-                    legend2.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(223, 23, 121)');
-                        //.style('stroke', 'rgb(57, 59, 121)');
-                        
-                    legend2.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('rukusj');
-                        
+                legend2.append('rect')
+                    .attr('width', '20')
+                    .attr('height', '20')
+                    .style('fill', 'rgb(223, 23, 121)');
                     
+                legend2.append('text')
+                    .attr('x', '30')
+                    .attr('y', '14')
+                    .text('rukusj');
             }
 		};
 

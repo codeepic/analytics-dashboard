@@ -964,12 +964,6 @@ var AnalyticsDirectives;
                         .attr('class', 'white')
                         .text(function (d) { return d.data.quantity; });
                     var quantitySumText = d3.sum(data, function (d) { return d.quantity; });
-                    // svg.append('text')
-                    //     .attr('transform', 'translate(' + width/2 + ',' + height/2 + ')')
-                    //     .attr('transform', 'translate(-100, 0)')
-                    //     .attr('font-size', '44')
-                    //     .attr('fill', '#999999')
-                    //     .text(total + '' + $scope.chartName.toUpperCase());
                     var text = svg.append('text')
                         .attr('font-weight', 'bold');
                     text.append('tspan')
@@ -988,6 +982,9 @@ var AnalyticsDirectives;
                     //     .attr('tranform', 'translate(50, 30)')
                     //     .style('font-size', '12px')
                     //     .call(d3.legend);
+                    function createLegend() {
+                        //implement
+                    }
                     //todo: get all this crap into one neat function using loop
                     var yPos = 330;
                     var legend1 = svg.append('g')
@@ -999,7 +996,6 @@ var AnalyticsDirectives;
                         .attr('width', '20')
                         .attr('height', '20')
                         .style('fill', 'rgb(57, 59, 121)');
-                    //.style('stroke', 'rgb(57, 59, 121)');
                     legend1.append('text')
                         .attr('x', '30')
                         .attr('y', '14')
@@ -1013,7 +1009,6 @@ var AnalyticsDirectives;
                         .attr('width', '20')
                         .attr('height', '20')
                         .style('fill', 'rgb(23, 159, 221)');
-                    //.style('stroke', 'rgb(57, 59, 121)');
                     legend2.append('text')
                         .attr('x', '30')
                         .attr('y', '14')
@@ -1027,7 +1022,6 @@ var AnalyticsDirectives;
                         .attr('width', '20')
                         .attr('height', '20')
                         .style('fill', 'rgb(123, 239, 121)');
-                    //.style('stroke', 'rgb(57, 59, 121)');
                     legend3.append('text')
                         .attr('x', '30')
                         .attr('y', '14')
@@ -1043,7 +1037,6 @@ var AnalyticsDirectives;
                         .attr('width', '20')
                         .attr('height', '20')
                         .style('fill', 'rgb(90, 78, 221)');
-                    //.style('stroke', 'rgb(57, 59, 121)');
                     legend1.append('text')
                         .attr('x', '30')
                         .attr('y', '14')
@@ -1057,7 +1050,6 @@ var AnalyticsDirectives;
                         .attr('width', '20')
                         .attr('height', '20')
                         .style('fill', 'rgb(223, 23, 121)');
-                    //.style('stroke', 'rgb(57, 59, 121)');
                     legend2.append('text')
                         .attr('x', '30')
                         .attr('y', '14')
