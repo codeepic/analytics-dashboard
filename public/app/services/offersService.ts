@@ -15,7 +15,7 @@ module AnalyticsServices {
             
             var offersByCategoryData = [
                 {
-                    category: 'Transport &amp; Travel',
+                    category: 'Transport & Travel',
                     quantity: 12  
                 },
                 {
@@ -23,11 +23,11 @@ module AnalyticsServices {
                     quantity: 9  
                 },
                 {
-                    category: 'Retail &amp; Fashion',
+                    category: 'Retail & Fashion',
                     quantity: 2  
                 },
                 {
-                    category: 'Food &amp; Drink',
+                    category: 'Food & Drink',
                     quantity: 14  
                 },
                 {

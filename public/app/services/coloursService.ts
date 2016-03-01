@@ -27,6 +27,18 @@ module AnalyticsServices {
             neonPinkCh: '#f95fc5',
             paleGreenCh: '#97f7b0'
         };
+        
+        public getChartColoursAsArray(): string[]{
+            var arr = [];
+            
+            for(var key in this.chartColours){
+                if(this.chartColours.hasOwnProperty(key)){
+                    arr.push(this.chartColours[key]);
+                }
+            }
+            
+            return arr;
+        }
     }  
     
     angular.module('analyticsApp').service('ColoursService', ColoursService);

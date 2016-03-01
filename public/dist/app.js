@@ -132,7 +132,7 @@ var AnalyticsServices;
             var q = this.$q.defer();
             var offersByCategoryData = [
                 {
-                    category: 'Transport &amp; Travel',
+                    category: 'Transport & Travel',
                     quantity: 12
                 },
                 {
@@ -140,11 +140,11 @@ var AnalyticsServices;
                     quantity: 9
                 },
                 {
-                    category: 'Retail &amp; Fashion',
+                    category: 'Retail & Fashion',
                     quantity: 2
                 },
                 {
-                    category: 'Food &amp; Drink',
+                    category: 'Food & Drink',
                     quantity: 14
                 },
                 {
@@ -190,6 +190,15 @@ var AnalyticsServices;
                 paleGreenCh: '#97f7b0'
             };
         }
+        ColoursService.prototype.getChartColoursAsArray = function () {
+            var arr = [];
+            for (var key in this.chartColours) {
+                if (this.chartColours.hasOwnProperty(key)) {
+                    arr.push(this.chartColours[key]);
+                }
+            }
+            return arr;
+        };
         return ColoursService;
     })();
     AnalyticsServices.ColoursService = ColoursService;
@@ -420,7 +429,7 @@ var AnalyticsServices;
             var q = this.$q.defer();
             var vendorsByCategoryData = [
                 {
-                    category: 'Transport &amp; Travel',
+                    category: 'Transport & Travel',
                     quantity: 10
                 },
                 {
@@ -428,16 +437,24 @@ var AnalyticsServices;
                     quantity: 20
                 },
                 {
-                    category: 'Retail &amp; Fashion',
+                    category: 'Retail & Fashion',
                     quantity: 40
                 },
                 {
-                    category: 'Food &amp; Drink',
+                    category: 'Food & Drink',
                     quantity: 80
                 },
                 {
                     category: 'Finance',
                     quantity: 260
+                },
+                {
+                    category: 'Tourism',
+                    quantity: 56
+                },
+                {
+                    category: 'Fishing',
+                    quantity: 33
                 }
             ];
             q.resolve(vendorsByCategoryData);
@@ -916,7 +933,7 @@ var AnalyticsDirectives;
             // but then you will tie the directive to one data set and it will not be
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
-                var elWidth, elHeight, data = $scope.data, chartColours = _this.ColoursService.chartColours;
+                var elWidth, elHeight, data = $scope.data, chartColoursObj = _this.ColoursService.chartColours, chartColoursArray = d3.values(chartColoursObj);
                 if (data) {
                     drawChart();
                 }
@@ -936,7 +953,7 @@ var AnalyticsDirectives;
                     if (w === void 0) { w = 460; }
                     var width = w, height = w * 2, //was w
                     radius = Math.min(width, height) / 2;
-                    var colourValues = d3.scale.ordinal().range(d3.values(chartColours));
+                    var colourValues = d3.scale.ordinal().range(chartColoursArray);
                     var arc = d3.svg.arc()
                         .outerRadius(radius - 10)
                         .innerRadius(radius - 50); //70 230
@@ -976,84 +993,31 @@ var AnalyticsDirectives;
                         .attr('x', '-20%')
                         .attr('dy', '40')
                         .text($scope.chartName.toUpperCase());
-                    //http://zeroviscosity.com/d3-js-step-by-step/step-3-adding-a-legend
-                    // var legend = svg.append('g')
-                    //     .attr('class', 'legend')
-                    //     .attr('tranform', 'translate(50, 30)')
-                    //     .style('font-size', '12px')
-                    //     .call(d3.legend);
-                    function createLegend() {
-                        //implement
-                    }
-                    //todo: get all this crap into one neat function using loop
-                    var yPos = 330;
-                    var legend1 = svg.append('g')
-                        .attr('class', 'legend')
-                        .attr('transform', 'translate(-230, ' + yPos + ')') //was 50,30 //now its out of chart area
-                        .attr('height', '50')
-                        .attr('width', '50');
-                    legend1.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(57, 59, 121)');
-                    legend1.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('kakakak');
-                    var legend2 = svg.append('g')
-                        .attr('class', 'legend')
-                        .attr('transform', 'translate(-230, ' + (yPos + 30) + ')') //30 + 20 rect height + 10 padding
-                        .attr('height', '50')
-                        .attr('width', '50');
-                    legend2.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(23, 159, 221)');
-                    legend2.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('omomom');
-                    var legend3 = svg.append('g')
-                        .attr('class', 'legend')
-                        .attr('transform', 'translate(-230, ' + (yPos + 60) + ')') //30 + 20 rect height + 10 padding
-                        .attr('height', '50')
-                        .attr('width', '50');
-                    legend3.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(123, 239, 121)');
-                    legend3.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('karramba');
-                    //right column
-                    var xPosRight = 30;
-                    var legend1 = svg.append('g')
-                        .attr('class', 'legend')
-                        .attr('transform', 'translate(' + xPosRight + ', ' + yPos + ')') //was 50,30 //now its out of chart area
-                        .attr('height', '50')
-                        .attr('width', '50');
-                    legend1.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(90, 78, 221)');
-                    legend1.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('nahfs');
-                    var legend2 = svg.append('g')
-                        .attr('class', 'legend')
-                        .attr('transform', 'translate(' + xPosRight + ', ' + (yPos + 30) + ')') //30 + 20 rect height + 10 padding
-                        .attr('height', '50')
-                        .attr('width', '50');
-                    legend2.append('rect')
-                        .attr('width', '20')
-                        .attr('height', '20')
-                        .style('fill', 'rgb(223, 23, 121)');
-                    legend2.append('text')
-                        .attr('x', '30')
-                        .attr('y', '14')
-                        .text('rukusj');
+                    createLegend(svg);
+                }
+                function createLegend(svg) {
+                    var leftColumnYPos = 330, rightColumnYPos = 330, leftColumnXPos = -230, rightColumnXPos = 30, colourSquareHeight = 20, colourSquareWidth = 20;
+                    data.forEach(function (d, i) {
+                        var legendItem = svg.append('g');
+                        //var half = Math.ceil((data.length-1) /2);
+                        var half = Math.ceil(data.length / 2);
+                        if (i < half) {
+                            legendItem.attr('transform', 'translate(' + leftColumnXPos + ', ' + leftColumnYPos + ')');
+                            leftColumnYPos += 30;
+                        }
+                        else {
+                            legendItem.attr('transform', 'translate(' + rightColumnXPos + ', ' + rightColumnYPos + ')');
+                            rightColumnYPos += 30;
+                        }
+                        legendItem.append('rect')
+                            .attr('height', colourSquareHeight)
+                            .attr('width', colourSquareWidth)
+                            .style('fill', chartColoursArray[i]);
+                        legendItem.append('text')
+                            .attr('x', '30')
+                            .attr('y', '14')
+                            .text(data[i].category + ' ' + data[i].quantity);
+                    });
                 }
             };
         }
@@ -1069,24 +1033,6 @@ var AnalyticsDirectives;
     AnalyticsDirectives.PieChart = PieChart;
     angular.module('analyticsApp').directive('pieChart', PieChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
-/*
-<g class="legend" transform="translate(-36,-44)">
-  <rect width="18" height="18" style="fill: rgb(57, 59, 121); stroke: rgb(57, 59, 121);"></rect>
-  <text x="22" y="14">Abulia</text>
-</g>
-<g class="legend" transform="translate(-36,-22)">
-  <rect width="18" height="18" style="fill: rgb(82, 84, 163); stroke: rgb(82, 84, 163);"></rect>
-  <text x="22" y="14">Betelgeuse</text>
-</g>
-<g class="legend" transform="translate(-36,0)">
-  <rect width="18" height="18" style="fill: rgb(107, 110, 207); stroke: rgb(107, 110, 207);"></rect>
-  <text x="22" y="14">Cantaloupe</text>
-</g>
-<g class="legend" transform="translate(-36,22)">
-  <rect width="18" height="18" style="fill: rgb(156, 158, 222); stroke: rgb(156, 158, 222);"></rect>
-  <text x="22" y="14">Dijkstra</text>
-</g>
- */ 
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 'use strict';

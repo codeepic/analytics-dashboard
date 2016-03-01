@@ -16,7 +16,7 @@ module AnalyticsServices {
             
             var vendorsByCategoryData = [
                 {
-                    category: 'Transport &amp; Travel',
+                    category: 'Transport & Travel',
                     quantity: 10  
                 },
                 {
@@ -24,16 +24,24 @@ module AnalyticsServices {
                     quantity: 20  
                 },
                 {
-                    category: 'Retail &amp; Fashion',
+                    category: 'Retail & Fashion',
                     quantity: 40  
                 },
                 {
-                    category: 'Food &amp; Drink',
+                    category: 'Food & Drink',
                     quantity: 80  
                 },
                 {
                     category: 'Finance',
                     quantity: 260  
+                },
+                {
+                    category: 'Tourism',
+                    quantity: 56
+                },
+                {
+                    category: 'Fishing',
+                    quantity: 33  
                 }
             ];
             
