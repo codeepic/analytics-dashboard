@@ -860,20 +860,41 @@ var AnalyticsDirectives;
                         .attr("dy", ".71em")
                         .style("text-anchor", "end")
                         .text("Codes");
-                    var city = svg.selectAll(".city")
+                    var appLine = svg.selectAll(".app")
                         .data(apps)
-                        .enter().append("g")
-                        .attr("class", "city");
-                    city.append("path")
+                        .enter().append("g");
+                    appLine.append("path")
                         .attr("class", "line")
                         .attr("d", function (d) { return line(d.values); }) //check line fn above
                         .style("stroke", function (d) { return color(d.name); });
-                    city.append("text")
+                    appLine.append("text")
                         .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; })
                         .attr("transform", function (d) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
                         .attr("x", 3)
                         .attr("dy", ".35em")
                         .text(function (d) { return d.name; });
+                    createLegend(svg, apps);
+                }
+                function createLegend(svg, apps) {
+                    console.log('apps: ', apps);
+                    var YPos = 330, XPos = -230, colourSquareHeight = 20, colourSquareWidth = 20;
+                    //you should not iterate over data
+                    //but over apps: web, iphone and android, look up for solution
+                    apps.forEach(function (d, i) {
+                        var legendItem = svg.append('g');
+                        legendItem.attr('transform', 'translate(' + XPos + ', ' + YPos + ')');
+                        YPos += 30;
+                        // 
+                        // legendItem.append('rect')
+                        //     .attr('height', colourSquareHeight)
+                        //     .attr('width', colourSquareWidth)
+                        //     .style('fill', chartColoursArray[i]);
+                        //     
+                        // legendItem.append('text')
+                        //     .attr('x', '30')
+                        //     .attr('y', '14')
+                        //     .text(data[i].category + ' ' + data[i].quantity);
+                    });
                 }
             };
         }
@@ -922,7 +943,6 @@ var AnalyticsDirectives;
             this.ColoursService = ColoursService;
             this.restrict = 'E';
             this.replace = true;
-            this.transclude = true; //todo: check if needed and remove
             this.templateUrl = '../app/directives/pieChart/pieChart.html';
             this.scope = {
                 chartHeading: '@',
