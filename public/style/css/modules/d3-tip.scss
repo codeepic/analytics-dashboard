@@ -20,6 +20,3 @@
         @include calc-mixin("left", "50% - #{$triangleSize}");
     }
 }
-
-//.d3-tip.on-line-chart:before { left:40%; }
-

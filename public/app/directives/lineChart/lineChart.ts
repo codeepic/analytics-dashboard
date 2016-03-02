@@ -101,7 +101,7 @@ module AnalyticsDirectives{
                 
                 //add tooltip
                 var tip = d3.tip()
-                    .attr('class', 'd3-tip on-line-chart')
+                    .attr('class', 'd3-tip')
                     .offset([-20, 0]) //top/ left
                     .html((d) => 'Users: ' + d.users);
                     

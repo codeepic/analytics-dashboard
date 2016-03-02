@@ -57,16 +57,12 @@ module AnalyticsDirectives{
 
                 var x = d3.time.scale().range([0, width]),
                     y = d3.scale.linear().range([height, 0]),
-                    //color = d3.scale.category10(),
-                    //color = d3.scale.ordinal.domain(chartColoursArray),
-                    // col = d3.scale.ordinal(),
-                    // color = col.domain(chartColoursArray),
                     color = d3.scale.ordinal().range(chartColoursArray),
                     xAxis = d3.svg.axis().scale(x).orient("bottom"),
                     yAxis = d3.svg.axis().scale(y).orient("left");
                     
                 var line = d3.svg.line()
-                    .interpolate("basis")
+                    //.interpolate('cardinal') https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate
                     .x(function(d: any) { return x(d.date); })
                     .y(function(d: any) { return y(d.codes); });
 
@@ -125,13 +121,32 @@ module AnalyticsDirectives{
                 //     .attr("x", 3)
                 //     .attr("dy", ".35em")
                 //     .text(function(d) { return d.name; });
+                
+                //add tooltip
+                var tip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .offset([-20, 0]) //top/ left
+                    .html((d) => d.codes);
+                    
+                svg.call(tip);
+                
+                //add circles
+                appLine.append('g').selectAll('circle')
+                    .data((d) => { return d.values; })
+                    .enter().append('circle')
+                    .attr("fill", function(d: any) { return color(this.parentNode.__data__.name) as number})
+                    .attr('cx', (dd: any) => x(dd.date))
+                    .attr('cy', (dd: any) => y(dd.codes))
+                    .attr('r', 5)
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
                     
                 createLegend(svg, apps);
             }
             
             function createLegend(svg, apps){
-                var YPos = -10,
-                    XPos = 830,
+                var YPos = -20,
+                    XPos = 900,
                     colourSquareHeight = 20,
                     colourSquareWidth = 20;
                 
@@ -173,26 +188,3 @@ interface IApp {
         codes: number
     }];
 };
-
-// interface IApp {
-//     name: string;
-//     values: {
-//         date: string;
-//         codes: Array<number>
-//     }
-// };
-
-// interface IS {
-//     date: string;
-//     codes: Array<number>
-// };
-
-// var apps = color.domain().map(function(name) {
-//     return {
-//         name: name,
-//         values: data.map(function(d) {
-//             //return {date: d.date, temperature: +d[name]};
-//             return {date: d.date, codes: +d[name]};
-//         })
-//     };
-// });
