@@ -42,7 +42,7 @@ module AnalyticsDirectives{
                 
             function drawChart(w: number = 460){
                 var width = w,
-                    height = w * 2, //was w
+                    height = w * 1.5, //was w
                     radius = Math.min(width, height) / 2;
                 
                 var colourValues = d3.scale.ordinal().range(chartColoursArray);
@@ -53,7 +53,7 @@ module AnalyticsDirectives{
                     
                 var arcOver = d3.svg.arc()
                     .innerRadius(radius - 20)
-                    .outerRadius(radius - 90);
+                    .outerRadius(radius - 80);
                     
                 var pie = d3.layout.pie()
                     .sort(null)
@@ -63,7 +63,8 @@ module AnalyticsDirectives{
                     .attr('width', width)
                     .attr('height', height)
                     .append('g')
-                    .attr('transform', 'translate(' + width / 2 + ',' + height/2 + ')');
+                    //.attr('transform', 'translate(' + width / 2 + ',' + height/2 + ')');
+                    .attr('transform', 'translate(' + width / 2 + ',' + height/3 + ')');
                 
                 var g = svg.selectAll('.arc')
                     .data(pie(data))
@@ -77,12 +78,12 @@ module AnalyticsDirectives{
                     })
                     .on('mouseover', function(d){
                         d3.select(this).transition()
-                            .duration(500)
+                            .duration(300)
                             .attr('d', arcOver); 
                     })
                     .on("mouseout", function(d) {
                         d3.select(this).transition()
-                            .duration(500)
+                            .duration(300)
                             .attr("d", arc);
                     });
 
@@ -114,8 +115,8 @@ module AnalyticsDirectives{
             }
             
             function createLegend(svg){
-                var leftColumnYPos = 330,
-                    rightColumnYPos = 330,
+                var leftColumnYPos = 300,
+                    rightColumnYPos = 300,
                     leftColumnXPos = -230,
                     rightColumnXPos = 30,
                     colourSquareHeight = 20,
