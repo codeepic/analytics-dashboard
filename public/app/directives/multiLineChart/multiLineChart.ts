@@ -1,5 +1,6 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
+/// <reference path="../../services/coloursService.ts" />
 'use strict';
 
 module AnalyticsDirectives{
@@ -10,15 +11,20 @@ module AnalyticsDirectives{
         scope = {
             data: '='
         };
-		//constructor(){}
+        
+		constructor(private ColoursService: AnalyticsServices.ColoursService){}
         
         // you can set $scope to implement certain interface that extends angular.IScope, 
 		// but then you will tie the directive to one data set and it will not be
 		// reusable, therefore use 'any' instead
         
 		link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
-            
-            var parseDate, elWidth: number, elHeight: number, data = $scope.data;
+                
+            var parseDate,
+                elWidth: number,
+                elHeight: number,
+                data = $scope.data,
+                chartColoursArray = d3.values(this.ColoursService.chartColours);
             
             if(data){
                 convertDates();
@@ -41,24 +47,24 @@ module AnalyticsDirectives{
             
             function convertDates(){
                 parseDate = d3.time.format("%Y%m%d").parse;
-                
-                data.forEach(function(d) {
-                    d.date = parseDate(d.date);
-                });
+                data.forEach((d) => { d.date = parseDate(d.date); });
             }
             
             function drawChart(w: number = 960){       //based on http://bl.ocks.org/mbostock/3884955
-                
                 var margin = {top: 20, right: 80, bottom: 30, left: 50},
                     width = w - margin.left - margin.right,
                     height = w/2 - margin.top - margin.bottom;
 
                 var x = d3.time.scale().range([0, width]),
                     y = d3.scale.linear().range([height, 0]),
-                    color = d3.scale.category10(),
+                    //color = d3.scale.category10(),
+                    //color = d3.scale.ordinal.domain(chartColoursArray),
+                    // col = d3.scale.ordinal(),
+                    // color = col.domain(chartColoursArray),
+                    color = d3.scale.ordinal().range(chartColoursArray),
                     xAxis = d3.svg.axis().scale(x).orient("bottom"),
                     yAxis = d3.svg.axis().scale(y).orient("left");
-
+                    
                 var line = d3.svg.line()
                     .interpolate("basis")
                     .x(function(d: any) { return x(d.date); })
@@ -109,55 +115,50 @@ module AnalyticsDirectives{
 
                 appLine.append("path")
                     .attr("class", "line")
-                    .attr("d", function(d: any) { return line(d.values); }) //check line fn above
-                    .style("stroke", function(d) { return color(d.name); });
+                    .attr("d", (d: any) => line(d.values) )
+                    .style("stroke", (d: any) => color(d.name) as number );
 
-                appLine.append("text")
-                    .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-                    .attr("transform", function(d: any) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
-                    .attr("x", 3)
-                    .attr("dy", ".35em")
-                    .text(function(d) { return d.name; });
+                //text at the end of each line
+                // appLine.append("text")
+                //     .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
+                //     .attr("transform", function(d: any) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
+                //     .attr("x", 3)
+                //     .attr("dy", ".35em")
+                //     .text(function(d) { return d.name; });
                     
                 createLegend(svg, apps);
             }
             
             function createLegend(svg, apps){
-                console.log('apps: ', apps);
-                
-                var YPos = 330,
-                    XPos = -230,
+                var YPos = -10,
+                    XPos = 830,
                     colourSquareHeight = 20,
                     colourSquareWidth = 20;
                 
-                //you should not iterate over data
-                //but over apps: web, iphone and android, look up for solution
-                apps.forEach((d, i) => {
+                apps.forEach((app, i) => {
                     
-                    var legendItem = svg.append('g');
-                    
-                    legendItem.attr('transform', 'translate(' + XPos + ', ' + YPos + ')');
+                    var legendItem = svg.append('g')
+                        .attr('transform', 'translate(' + XPos + ', ' + YPos + ')');
                         YPos += 30;
-                    // 
-                    // legendItem.append('rect')
-                    //     .attr('height', colourSquareHeight)
-                    //     .attr('width', colourSquareWidth)
-                    //     .style('fill', chartColoursArray[i]);
-                    //     
-                    // legendItem.append('text')
-                    //     .attr('x', '30')
-                    //     .attr('y', '14')
-                    //     .text(data[i].category + ' ' + data[i].quantity);
+                     
+                    legendItem.append('rect')
+                        .attr('height', colourSquareHeight)
+                        .attr('width', colourSquareWidth)
+                        .style('fill', chartColoursArray[i]); //chartColoursArray[i]
                         
+                    legendItem.append('text')
+                        .attr('x', '30')
+                        .attr('y', '14')
+                        .text(app.name);
                 });
             }
 		};
 
 		static factory(): angular.IDirectiveFactory {
-			var directive: angular.IDirectiveFactory = () => {
-					return new MultiLineChart();
+			var directive: angular.IDirectiveFactory = (ColoursService) => {
+					return new MultiLineChart(ColoursService);
 			};
-			directive.$inject = [];
+			directive.$inject = ['ColoursService'];
 			return directive;
 		}
 	}

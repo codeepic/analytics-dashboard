@@ -567,6 +567,7 @@ var AnalyticsDirectives;
                 chartHeading: '@',
                 data: '='
             };
+            //constructor(){}
             //angular.IScope
             this.link = function ($scope, el, attrs) {
                 var elWidth, elHeight, data = $scope.data;
@@ -584,32 +585,6 @@ var AnalyticsDirectives;
                 function removeChart() {
                     d3.select('.horizontal-bar-chart svg').remove();
                 }
-                //based on //http://bl.ocks.org/Caged/6476579
-                //or even better https://bost.ocks.org/mike/bar/3/
-                // function drawChart(w: number = 640){
-                //     var margin = { top: 30, right: 10, bottom: 40, left: 70 },
-                //         width = w - margin.left - margin.right,
-                //         height = w/2 - margin.top - margin.bottom;
-                //     var y = d3.scale.linear().range([height, 0]);
-                //     var chart = d3.select('.horizontal-bar-chart')
-                //         .attr('width', width)
-                //         .attr('height', height);
-                //     y.domain([0, d3.max(data, (d: any) => d.deregistrations)])
-                //     var barWidth = width / data.lentgh;
-                //     var bar = chart.selectAll('g')
-                //         .data(data)
-                //         .enter().append('g')
-                //         .attr('transform', (d: any, i: number) => 'translate(' + i*barWidth + ', 0)');
-                //     bar.append('rect')
-                //         .attr('y', (d: any) => y(d.deregistrations))
-                //         .attr('height', (d: any) => height - y(d.deregistrations))
-                //         .attr('width', barWidth -1);
-                //     bar.append('text')
-                //         .attr('x', barWidth/2)
-                //         .attr('y', (d: any) => y(d.registrations) + 3) //why 3
-                //         .attr('dy', '.75em')
-                //         .text((d: any) => d.deregistrations);            
-                // }
                 function drawChart(w) {
                     if (w === void 0) { w = 640; }
                     var margin = { top: 30, right: 10, bottom: 40, left: 70 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
@@ -621,7 +596,6 @@ var AnalyticsDirectives;
                         .scale(y)
                         .orient('left')
                         .tickPadding(6); //todo: check
-                    //todo: tip is not showing up
                     var tip = d3.tip()
                         .attr('class', 'd3-tip')
                         .offset([-10, 0])
@@ -654,7 +628,6 @@ var AnalyticsDirectives;
                         .on('mouseout', tip.hide);
                 }
             };
-            console.log('awesome horizontal chart is here');
         }
         HorizontalBarChart.factory = function () {
             var directive = function () {
@@ -781,23 +754,25 @@ var AnalyticsDirectives;
 // 
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
+/// <reference path="../../services/coloursService.ts" />
 'use strict';
 var AnalyticsDirectives;
 (function (AnalyticsDirectives) {
     var MultiLineChart = (function () {
-        function MultiLineChart() {
+        function MultiLineChart(ColoursService) {
+            var _this = this;
+            this.ColoursService = ColoursService;
             this.restrict = 'E';
             this.templateUrl = '../app/directives/multiLineChart/multiLineChart.html';
             this.replace = true;
             this.scope = {
                 data: '='
             };
-            //constructor(){}
             // you can set $scope to implement certain interface that extends angular.IScope, 
             // but then you will tie the directive to one data set and it will not be
             // reusable, therefore use 'any' instead
             this.link = function ($scope, el, attrs) {
-                var parseDate, elWidth, elHeight, data = $scope.data;
+                var parseDate, elWidth, elHeight, data = $scope.data, chartColoursArray = d3.values(_this.ColoursService.chartColours);
                 if (data) {
                     convertDates();
                     drawChart();
@@ -816,14 +791,17 @@ var AnalyticsDirectives;
                 }
                 function convertDates() {
                     parseDate = d3.time.format("%Y%m%d").parse;
-                    data.forEach(function (d) {
-                        d.date = parseDate(d.date);
-                    });
+                    data.forEach(function (d) { d.date = parseDate(d.date); });
                 }
                 function drawChart(w) {
                     if (w === void 0) { w = 960; }
                     var margin = { top: 20, right: 80, bottom: 30, left: 50 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
-                    var x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), color = d3.scale.category10(), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
+                    var x = d3.time.scale().range([0, width]), y = d3.scale.linear().range([height, 0]), 
+                    //color = d3.scale.category10(),
+                    //color = d3.scale.ordinal.domain(chartColoursArray),
+                    // col = d3.scale.ordinal(),
+                    // color = col.domain(chartColoursArray),
+                    color = d3.scale.ordinal().range(chartColoursArray), xAxis = d3.svg.axis().scale(x).orient("bottom"), yAxis = d3.svg.axis().scale(y).orient("left");
                     var line = d3.svg.line()
                         .interpolate("basis")
                         .x(function (d) { return x(d.date); })
@@ -865,44 +843,40 @@ var AnalyticsDirectives;
                         .enter().append("g");
                     appLine.append("path")
                         .attr("class", "line")
-                        .attr("d", function (d) { return line(d.values); }) //check line fn above
+                        .attr("d", function (d) { return line(d.values); })
                         .style("stroke", function (d) { return color(d.name); });
-                    appLine.append("text")
-                        .datum(function (d) { return { name: d.name, value: d.values[d.values.length - 1] }; })
-                        .attr("transform", function (d) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
-                        .attr("x", 3)
-                        .attr("dy", ".35em")
-                        .text(function (d) { return d.name; });
+                    //text at the end of each line
+                    // appLine.append("text")
+                    //     .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
+                    //     .attr("transform", function(d: any) { return "translate(" + x(d.value.date) + "," + y(d.value.codes) + ")"; })
+                    //     .attr("x", 3)
+                    //     .attr("dy", ".35em")
+                    //     .text(function(d) { return d.name; });
                     createLegend(svg, apps);
                 }
                 function createLegend(svg, apps) {
-                    console.log('apps: ', apps);
-                    var YPos = 330, XPos = -230, colourSquareHeight = 20, colourSquareWidth = 20;
-                    //you should not iterate over data
-                    //but over apps: web, iphone and android, look up for solution
-                    apps.forEach(function (d, i) {
-                        var legendItem = svg.append('g');
-                        legendItem.attr('transform', 'translate(' + XPos + ', ' + YPos + ')');
+                    var YPos = -10, XPos = 830, colourSquareHeight = 20, colourSquareWidth = 20;
+                    apps.forEach(function (app, i) {
+                        var legendItem = svg.append('g')
+                            .attr('transform', 'translate(' + XPos + ', ' + YPos + ')');
                         YPos += 30;
-                        // 
-                        // legendItem.append('rect')
-                        //     .attr('height', colourSquareHeight)
-                        //     .attr('width', colourSquareWidth)
-                        //     .style('fill', chartColoursArray[i]);
-                        //     
-                        // legendItem.append('text')
-                        //     .attr('x', '30')
-                        //     .attr('y', '14')
-                        //     .text(data[i].category + ' ' + data[i].quantity);
+                        legendItem.append('rect')
+                            .attr('height', colourSquareHeight)
+                            .attr('width', colourSquareWidth)
+                            .style('fill', chartColoursArray[i]); //chartColoursArray[i]
+                        legendItem.append('text')
+                            .attr('x', '30')
+                            .attr('y', '14')
+                            .text(app.name);
                     });
                 }
             };
         }
         MultiLineChart.factory = function () {
-            var directive = function () {
-                return new MultiLineChart();
+            var directive = function (ColoursService) {
+                return new MultiLineChart(ColoursService);
             };
-            directive.$inject = [];
+            directive.$inject = ['ColoursService'];
             return directive;
         };
         return MultiLineChart;
@@ -931,6 +905,101 @@ var AnalyticsDirectives;
 //         })
 //     };
 // }); 
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/d3/d3.d.ts" />
+'use strict';
+var AnalyticsDirectives;
+(function (AnalyticsDirectives) {
+    var VerticalBarChart = (function () {
+        function VerticalBarChart() {
+            this.restrict = 'E';
+            this.replace = true;
+            this.templateUrl = '../app/directives/verticalBarChart/verticalBarChart.html';
+            this.scope = {
+                chartHeading: '@',
+                data: '='
+            };
+            //constructor(){}
+            //angular.IScope
+            this.link = function ($scope, el, attrs) {
+                var elWidth, elHeight, data = $scope.data;
+                if (data) {
+                    drawChart();
+                }
+                $scope.$watch(function () {
+                    elWidth = el.context.clientWidth;
+                    elHeight = el.context.clientHeight;
+                    return elWidth * elHeight;
+                }, function () {
+                    removeChart();
+                    drawChart(elWidth);
+                });
+                function removeChart() {
+                    d3.select('.vertical-bar-chart svg').remove();
+                }
+                //based on //http://bl.ocks.org/Caged/6476579
+                //or even better https://bost.ocks.org/mike/bar/3/
+                function drawChart(w) {
+                    if (w === void 0) { w = 640; }
+                    var margin = { top: 30, right: 10, bottom: 40, left: 70 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
+                    var x = d3.scale.ordinal().rangeRoundBands([0, width], .15), y = d3.scale.linear().range([height, 0]);
+                    var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .orient('bottom');
+                    var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient('left');
+                    var tip = d3.tip()
+                        .attr('class', 'd3-tip')
+                        .offset([-10, 0])
+                        .html(function (d) { return "Deregistrations: " + d.deregistrations; });
+                    var svg = d3.select('.vertical-bar-chart').append('svg')
+                        .attr('width', width + margin.left + margin.right)
+                        .attr('height', height + margin.top + margin.bottom)
+                        .append('g')
+                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                    svg.call(tip);
+                    x.domain(data.map(function (d) { return d.age; }));
+                    y.domain([0, d3.max(data, function (d) { return d.deregistrations; })]);
+                    svg.append('g')
+                        .attr('class', 'x axis')
+                        .attr('transform', 'translate(0,' + height + ')')
+                        .call(xAxis);
+                    svg.append('g')
+                        .attr('class', 'y axis')
+                        .call(yAxis)
+                        .append('text')
+                        .attr('transform', 'rotate(-90)')
+                        .attr('y', 6)
+                        .attr('dy', '.71em');
+                    //.style('text-anchor', 'end')
+                    //.text('Deregistrations')
+                    svg.selectAll('.bar')
+                        .data(data)
+                        .enter().append('rect')
+                        .attr('class', 'bar')
+                        .attr('x', function (d) { return x(d.age); })
+                        .attr('width', x.rangeBand())
+                        .attr('y', function (d) { return y(d.deregistrations); })
+                        .attr('height', function (d) { return height - y(d.deregistrations); })
+                        .on('mouseover', tip.show)
+                        .on('mouseout', tip.hide);
+                }
+            };
+        }
+        VerticalBarChart.factory = function () {
+            var directive = function () {
+                return new VerticalBarChart();
+            };
+            directive.$inject = [];
+            return directive;
+        };
+        return VerticalBarChart;
+    })();
+    AnalyticsDirectives.VerticalBarChart = VerticalBarChart;
+    angular.module('analyticsApp').directive('verticalBarChart', VerticalBarChart.factory());
+})(AnalyticsDirectives || (AnalyticsDirectives = {}));
+// 
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../../typings/d3/d3.d.ts" />
 /// <reference path="../../services/coloursService.ts" />
@@ -1053,98 +1122,3 @@ var AnalyticsDirectives;
     AnalyticsDirectives.PieChart = PieChart;
     angular.module('analyticsApp').directive('pieChart', PieChart.factory());
 })(AnalyticsDirectives || (AnalyticsDirectives = {}));
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../../typings/d3/d3.d.ts" />
-'use strict';
-var AnalyticsDirectives;
-(function (AnalyticsDirectives) {
-    var VerticalBarChart = (function () {
-        function VerticalBarChart() {
-            this.restrict = 'E';
-            this.replace = true;
-            this.templateUrl = '../app/directives/verticalBarChart/verticalBarChart.html';
-            this.scope = {
-                chartHeading: '@',
-                data: '='
-            };
-            //constructor(){}
-            //angular.IScope
-            this.link = function ($scope, el, attrs) {
-                var elWidth, elHeight, data = $scope.data;
-                if (data) {
-                    drawChart();
-                }
-                $scope.$watch(function () {
-                    elWidth = el.context.clientWidth;
-                    elHeight = el.context.clientHeight;
-                    return elWidth * elHeight;
-                }, function () {
-                    removeChart();
-                    drawChart(elWidth);
-                });
-                function removeChart() {
-                    d3.select('.vertical-bar-chart svg').remove();
-                }
-                //based on //http://bl.ocks.org/Caged/6476579
-                //or even better https://bost.ocks.org/mike/bar/3/
-                function drawChart(w) {
-                    if (w === void 0) { w = 640; }
-                    var margin = { top: 30, right: 10, bottom: 40, left: 70 }, width = w - margin.left - margin.right, height = w / 2 - margin.top - margin.bottom;
-                    var x = d3.scale.ordinal().rangeRoundBands([0, width], .15), y = d3.scale.linear().range([height, 0]);
-                    var xAxis = d3.svg.axis()
-                        .scale(x)
-                        .orient('bottom');
-                    var yAxis = d3.svg.axis()
-                        .scale(y)
-                        .orient('left');
-                    var tip = d3.tip()
-                        .attr('class', 'd3-tip')
-                        .offset([-10, 0])
-                        .html(function (d) { return "Deregistrations: " + d.deregistrations; });
-                    var svg = d3.select('.vertical-bar-chart').append('svg')
-                        .attr('width', width + margin.left + margin.right)
-                        .attr('height', height + margin.top + margin.bottom)
-                        .append('g')
-                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-                    svg.call(tip);
-                    x.domain(data.map(function (d) { return d.age; }));
-                    y.domain([0, d3.max(data, function (d) { return d.deregistrations; })]);
-                    svg.append('g')
-                        .attr('class', 'x axis')
-                        .attr('transform', 'translate(0,' + height + ')')
-                        .call(xAxis);
-                    svg.append('g')
-                        .attr('class', 'y axis')
-                        .call(yAxis)
-                        .append('text')
-                        .attr('transform', 'rotate(-90)')
-                        .attr('y', 6)
-                        .attr('dy', '.71em');
-                    //.style('text-anchor', 'end')
-                    //.text('Deregistrations')
-                    svg.selectAll('.bar')
-                        .data(data)
-                        .enter().append('rect')
-                        .attr('class', 'bar')
-                        .attr('x', function (d) { return x(d.age); })
-                        .attr('width', x.rangeBand())
-                        .attr('y', function (d) { return y(d.deregistrations); })
-                        .attr('height', function (d) { return height - y(d.deregistrations); })
-                        .on('mouseover', tip.show)
-                        .on('mouseout', tip.hide);
-                }
-            };
-        }
-        VerticalBarChart.factory = function () {
-            var directive = function () {
-                return new VerticalBarChart();
-            };
-            directive.$inject = [];
-            return directive;
-        };
-        return VerticalBarChart;
-    })();
-    AnalyticsDirectives.VerticalBarChart = VerticalBarChart;
-    angular.module('analyticsApp').directive('verticalBarChart', VerticalBarChart.factory());
-})(AnalyticsDirectives || (AnalyticsDirectives = {}));
-// 

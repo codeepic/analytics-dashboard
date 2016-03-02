@@ -13,9 +13,7 @@ module AnalyticsDirectives {
             data: '='    
         };
         
-        constructor(){
-            console.log('awesome horizontal chart is here');
-        }
+        //constructor(){}
         
         //angular.IScope
         link: angular.IDirectiveLinkFn = ($scope: any, el: angular.IAugmentedJQuery, attrs: angular.IAttributes) => {
@@ -36,40 +34,6 @@ module AnalyticsDirectives {
                 d3.select('.horizontal-bar-chart svg').remove();
             }
             
-            //based on //http://bl.ocks.org/Caged/6476579
-            //or even better https://bost.ocks.org/mike/bar/3/
-            // function drawChart(w: number = 640){
-            //     var margin = { top: 30, right: 10, bottom: 40, left: 70 },
-            //         width = w - margin.left - margin.right,
-            //         height = w/2 - margin.top - margin.bottom;
-                
-            //     var y = d3.scale.linear().range([height, 0]);
-            
-            //     var chart = d3.select('.horizontal-bar-chart')
-            //         .attr('width', width)
-            //         .attr('height', height);
-                
-            //     y.domain([0, d3.max(data, (d: any) => d.deregistrations)])
-                
-            //     var barWidth = width / data.lentgh;
-                
-            //     var bar = chart.selectAll('g')
-            //         .data(data)
-            //         .enter().append('g')
-            //         .attr('transform', (d: any, i: number) => 'translate(' + i*barWidth + ', 0)');
-                    
-            //     bar.append('rect')
-            //         .attr('y', (d: any) => y(d.deregistrations))
-            //         .attr('height', (d: any) => height - y(d.deregistrations))
-            //         .attr('width', barWidth -1);
-                    
-            //     bar.append('text')
-            //         .attr('x', barWidth/2)
-            //         .attr('y', (d: any) => y(d.registrations) + 3) //why 3
-            //         .attr('dy', '.75em')
-            //         .text((d: any) => d.deregistrations);            
-            // }
-            
             function drawChart(w: number = 640){
                 var margin = { top: 30, right: 10, bottom: 40, left: 70 },
                     width = w - margin.left - margin.right,
@@ -87,12 +51,10 @@ module AnalyticsDirectives {
                     .orient('left')
                     //.tickSize(2)        //todo: check
                     .tickPadding(6);    //todo: check
-                    
-                //todo: tip is not showing up
+                
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
-                    //.offset([0, (d: any) => x(d.deregistrations)]) //tried to offset it to the right from the bar - not working
                     .html((d) => "Deregistrations: " + d.deregistrations );
                     
                 var svg = d3.select('.horizontal-bar-chart').append('svg')
