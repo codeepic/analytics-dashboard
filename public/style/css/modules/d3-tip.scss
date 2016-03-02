@@ -2,21 +2,31 @@
 
 .d3-tip{
     $triangleSize: 10px;
+    $triangleShadowSize: 12px;
     
-    color: #fff;
+    color: $grey;
     padding: 12px;
-    background: rgba(0, 0, 0, 0.7);
+    background: $whiteSmoke;
+    border: 1px solid $veryLightGrey;
     //@include transition-mixin;
     
-    &:before{
+    &:before, &:after{
         content: '';
         position: absolute;
-        top: 44px;
         width: 0;
         height: 0;
         border-left: $triangleSize solid transparent;
         border-right: $triangleSize solid transparent;
-        border-top: $triangleSize solid rgba(0, 0, 0, 0.7);
         @include calc-mixin("left", "50% - #{$triangleSize}");
+    }
+    
+    &:before{ 
+        top: 45px;
+        border-top: $triangleSize solid $veryLightGrey;
+    }
+    
+    &:after{
+        top: 44px;
+        border-top: $triangleSize solid $whiteSmoke;
     }
 }
