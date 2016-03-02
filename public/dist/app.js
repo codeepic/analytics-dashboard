@@ -939,8 +939,11 @@ var AnalyticsDirectives;
                     radius = Math.min(width, height) / 2;
                     var colourValues = d3.scale.ordinal().range(chartColoursArray);
                     var arc = d3.svg.arc()
-                        .outerRadius(radius - 10)
-                        .innerRadius(radius - 50); //70 230
+                        .outerRadius(radius - 30)
+                        .innerRadius(radius - 80);
+                    var arcOver = d3.svg.arc()
+                        .innerRadius(radius - 20)
+                        .outerRadius(radius - 90);
                     var pie = d3.layout.pie()
                         .sort(null)
                         .value(function (d) { return d.quantity; });
@@ -957,6 +960,16 @@ var AnalyticsDirectives;
                         .attr('d', arc)
                         .attr('fill', function (d) {
                         return colourValues(d.data.category);
+                    })
+                        .on('mouseover', function (d) {
+                        d3.select(this).transition()
+                            .duration(500)
+                            .attr('d', arcOver);
+                    })
+                        .on("mouseout", function (d) {
+                        d3.select(this).transition()
+                            .duration(500)
+                            .attr("d", arc);
                     });
                     //arc numbers                    
                     g.append('text')

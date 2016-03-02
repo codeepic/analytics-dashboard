@@ -48,8 +48,12 @@ module AnalyticsDirectives{
                 var colourValues = d3.scale.ordinal().range(chartColoursArray);
                 
                 var arc = d3.svg.arc()
-                    .outerRadius(radius - 10)
-                    .innerRadius(radius - 50); //70 230
+                    .outerRadius(radius - 30)
+                    .innerRadius(radius - 80);
+                    
+                var arcOver = d3.svg.arc()
+                    .innerRadius(radius - 20)
+                    .outerRadius(radius - 90);
                     
                 var pie = d3.layout.pie()
                     .sort(null)
@@ -58,8 +62,8 @@ module AnalyticsDirectives{
                 var svg = d3.select('#'+ el.context.id).append('svg')
                     .attr('width', width)
                     .attr('height', height)
-                .append('g')
-                .attr('transform', 'translate(' + width / 2 + ',' + height/2 + ')');
+                    .append('g')
+                    .attr('transform', 'translate(' + width / 2 + ',' + height/2 + ')');
                 
                 var g = svg.selectAll('.arc')
                     .data(pie(data))
@@ -70,6 +74,16 @@ module AnalyticsDirectives{
                     .attr('d', <any>arc)
                     .attr('fill', function (d: any): any {
                         return colourValues(d.data.category); 
+                    })
+                    .on('mouseover', function(d){
+                        d3.select(this).transition()
+                            .duration(500)
+                            .attr('d', arcOver); 
+                    })
+                    .on("mouseout", function(d) {
+                        d3.select(this).transition()
+                            .duration(500)
+                            .attr("d", arc);
                     });
 
                 //arc numbers                    

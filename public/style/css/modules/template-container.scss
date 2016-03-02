@@ -4,6 +4,7 @@
     float: right;
     width: 82%;
     padding: 20px;
+    background: $whiteSmoke;
 }
 
 //todo: move to another module
@@ -12,9 +13,12 @@
 .multi-line-chart,
 .horizontal-bar-chart,
 .vertical-bar-chart{
-    border: 1px solid $veryLightGrey;
+    background: #fff;
+    //border: 1px solid $veryLightGrey;
 	min-height: 250px;
 	margin-top: 20px;
+    
+    h3 { padding: 20px; }
 }
 
 .pie-chart { width: 48%; }
